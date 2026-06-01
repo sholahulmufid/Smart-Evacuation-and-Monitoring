@@ -1347,11 +1347,57 @@
 
 /*  MEDIA SCREENS */
 
-    @media (max-width: 768px) {
-      .sc-val {
-        font-size: 5px;
-      }
-    }
+   /* ━━━━━━━━━━━━ MEDIA SCREENS (RESPONSIVE) ━━━━━━━━━━━━ */
+
+@media (max-width: 768px) {
+  /* 1. Izinkan halaman bisa di-scroll ke bawah khusus di HP */
+  html, body {
+    overflow-y: auto !important;
+    height: auto;
+  }
+
+  /* 2. Ubah struktur header agar rapi di layar sempit */
+  header {
+    height: auto;
+    flex-direction: column;
+    padding: 10px;
+    gap: 8px;
+  }
+  .header-nav {
+    width: 100%;
+    justify-content: center;
+  }
+  .header-right {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* 3. Ubah susunan Stat Cards dari 4 kolom menyamping menjadi 2x2 */
+  .stat-row {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* 4. Sesuaikan ukuran font di HP agar pas (Jangan gunakan 5px) */
+  .sc-val {
+    font-size: 20px !important; 
+  }
+  .sc-label {
+    font-size: 10px;
+    letter-spacing: 1px;
+  }
+
+  /* 5. Ubah susunan Gauge dari menyamping menjadi vertikal ke bawah */
+  .gauge-row {
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+  }
+
+  /* 6. Atur susunan Setting Grid di tab pengaturan agar tidak dempet */
+  .settings-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
   </style>
 </head>
 
