@@ -1359,18 +1359,20 @@
   /* 2. Ubah struktur header agar rapi di layar sempit */
   header {
     height: auto;
-    flex-direction: column;
+    flex-direction: row;
     padding: 10px;
     gap: 8px;
   }
   .header-nav {
     width: 100%;
     justify-content: center;
+   
   }
-  .header-right {
-    width: 100%;
-    justify-content: center;
-    flex-wrap: wrap;
+
+  .nav-tab {
+    padding: 6px 10px;
+    font-size: 13px;
+    letter-spacing: 1.5px;
   }
 
   /* 3. Ubah susunan Stat Cards dari 4 kolom menyamping menjadi 2x2 */
@@ -1412,7 +1414,7 @@
     <header>
       <div class="header-logo">
         <div class="logo-hex">🔥</div>
-        S<span class="hl">E a</span>M
+        <!-- S<span class="hl">E a</span>M -->
       </div>
       <nav class="header-nav">
         <button class="nav-tab active" data-page="dashboard">DASHBOARD</button>
