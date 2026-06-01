@@ -1345,61 +1345,65 @@
       }
     }
 
-/*  MEDIA SCREENS */
+    /*  MEDIA SCREENS */
 
-   /* ━━━━━━━━━━━━ MEDIA SCREENS (RESPONSIVE) ━━━━━━━━━━━━ */
+    /* ━━━━━━━━━━━━ MEDIA SCREENS (RESPONSIVE) ━━━━━━━━━━━━ */
 
-@media (max-width: 768px) {
-  /* 1. Izinkan halaman bisa di-scroll ke bawah khusus di HP */
-  html, body {
-    overflow-y: auto !important;
-    height: auto;
-  }
+    @media (max-width: 768px) {
 
-  /* 2. Ubah struktur header agar rapi di layar sempit */
-  header {
-    height: auto;
-    flex-direction: row;
-    padding: 10px;
-    gap: 8px;
-  }
-  .header-nav {
-    width: 100%;
-    justify-content: center;
-   
-  }
+      /* 1. Izinkan halaman bisa di-scroll ke bawah khusus di HP */
+      html,
+      body {
+        overflow-y: auto !important;
+        height: auto;
+      }
 
-  .nav-tab {
-    padding: 6px 10px;
-    font-size: 13px;
-    letter-spacing: 1.5px;
-  }
+      /* 2. Ubah struktur header agar rapi di layar sempit */
+      header {
+        height: auto;
+        flex-direction: row;
+        padding: 10px;
+        gap: 8px;
+      }
 
-  /* 3. Ubah susunan Stat Cards dari 4 kolom menyamping menjadi 2x2 */
-  .stat-row {
-    grid-template-columns: repeat(2, 1fr) !important;
-  }
+      .header-nav {
+        width: 100%;
+        justify-content: center;
 
-  /* 4. Sesuaikan ukuran font di HP agar pas (Jangan gunakan 5px) */
-  .sc-val {
-    font-size: 20px !important; 
-  }
-  .sc-label {
-    font-size: 10px;
-    letter-spacing: 1px;
-  }
+      }
 
-  /* 5. Ubah susunan Gauge dari menyamping menjadi vertikal ke bawah */
-  .gauge-row {
-    grid-template-columns: 1fr !important;
-    gap: 12px;
-  }
+      .nav-tab {
+        padding: 6px 10px;
+        font-size: 13px;
+        letter-spacing: 1.5px;
+      }
 
-  /* 6. Atur susunan Setting Grid di tab pengaturan agar tidak dempet */
-  .settings-grid {
-    grid-template-columns: 1fr !important;
-  }
-}
+      /* 3. Ubah susunan Stat Cards dari 4 kolom menyamping menjadi 2x2 */
+      .stat-row {
+        grid-template-columns: repeat(2, 1fr) !important;
+      }
+
+      /* 4. Sesuaikan ukuran font di HP agar pas (Jangan gunakan 5px) */
+      .sc-val {
+        font-size: 20px !important;
+      }
+
+      .sc-label {
+        font-size: 10px;
+        letter-spacing: 1px;
+      }
+
+      /* 5. Ubah susunan Gauge dari menyamping menjadi vertikal ke bawah */
+      .gauge-row {
+        grid-template-columns: 1fr !important;
+        gap: 12px;
+      }
+
+      /* 6. Atur susunan Setting Grid di tab pengaturan agar tidak dempet */
+      .settings-grid {
+        grid-template-columns: 1fr !important;
+      }
+    }
   </style>
 </head>
 
@@ -1876,6 +1880,24 @@
         `→ KANAN: ${fireKanan ? '🔥API!' : 'AMAN'} · ← KIRI: ${fireKiri ? '🔥API!' : 'AMAN'}`
 
       drawGauge('g-fire', fpct, fc, fireAny)
+
+      // Update warna CSS variable fire-card secara dinamis
+      const fireCard = document.querySelector('.gauge-card.fire-card')
+      if (fireCard) {
+        fireCard.style.setProperty('--gc', fireAny ? '#ff0057' : '#00ff87')
+        fireCard.classList.toggle('fire-active', fireAny)
+      }
+
+      // Update gambar peta sesuai kondisi api (gunakan variabel yang benar)
+      const mapImg = q('map-floor-1')
+      if (mapImg) {
+        if (S.floor === 1) {
+          mapImg.src = S.fb.api_kanan ? 'fire1.jpg' : 'Lantai1.png'  // ✅ pakai S.fb.api_kanan
+        } else {
+          mapImg.src = S.fb.api_kiri ? 'fire2.jpg' : 'Lantai2.png'   // ✅ pakai S.fb.api_kiri
+        }
+      }
+
     }
 
     function updateStats() {
