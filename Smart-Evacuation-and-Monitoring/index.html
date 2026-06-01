@@ -1,0 +1,2084 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FireGuard Pro</title>
+
+  <!-- ══════════════════════════════════════
+       FIREBASE SDK v9 (compat mode)
+       ══════════════════════════════════════ -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Inter:wght@300;400;500;600&family=Poppins:wght@400;500&display=swap"
+    rel="stylesheet">
+
+  <style>
+    /* ━━━━━━━━━━━━ DESIGN TOKENS ━━━━━━━━━━━━ */
+    :root {
+      --bg0: #061E29;
+      --bg1: #0f2733;
+      --bg2: #5F9598;
+      --bg3: #a3147f;
+      --cyan: #00e5ff;
+      --cyan2: #0099bb;
+      --pink: #ff0057;
+      --yellow: #ffd600;
+      --green: #00ff87;
+      --orange: #ff6b1a;
+      --purple: #a855f7;
+      --text: #e8f4fd;
+      --muted: #4a6a80;
+      --dim: #1a3050;
+      --glow-c: 0 0 12px #00e5ff55, 0 0 40px #00e5ff18;
+      --glow-p: 0 0 12px #ff005755, 0 0 40px #ff005718;
+      --glow-g: 0 0 12px #00ff8755, 0 0 40px #00ff8718;
+      --glow-y: 0 0 12px #ffd60055, 0 0 40px #ffd60018;
+      --f-head: 'Orbitron', monospace;
+      --f-mono: 'Share Tech Mono', monospace;
+      --f-body: 'Inter', sans-serif;
+      --f-pop: 'Poppins', sans-serif;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      background: var(--bg0);
+      color: var(--text);
+      font-family: var(--f-body);
+      font-size: 14px;
+    }
+
+    button {
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    input {
+      font-family: inherit;
+    }
+
+    ::-webkit-scrollbar {
+      width: 3px;
+      height: 3px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg1);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--cyan2);
+      border-radius: 2px;
+    }
+
+    /* ━━━━━━━━━━━━ BACKGROUND ━━━━━━━━━━━━ */
+    .grid-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image: linear-gradient(#f1540b20 1px, transparent 1px),
+        linear-gradient(90deg, #1a305020 1px, transparent 1px);
+      background-size: 60px 60px;
+      animation: gridBreath 5s ease-in-out infinite;
+    }
+
+    @keyframes gridBreath {
+
+      0%,
+      100% {
+        opacity: .35
+      }
+
+      50% {
+        opacity: .15
+      }
+    }
+
+    .scanlines {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      pointer-events: none;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, #00000015 2px, #00000015 4px);
+      animation: scanDrift 10s linear infinite;
+    }
+
+    @keyframes scanDrift {
+      from {
+        background-position: 0 0
+      }
+
+      to {
+        background-position: 0 200px
+      }
+    }
+
+    /* ━━━━━━━━━━━━ CORNER BRACKETS ━━━━━━━━━━━━ */
+    .bracket-box {
+      position: relative;
+    }
+
+    .b-tl,
+    .b-tr,
+    .b-bl,
+    .b-br {
+      position: absolute;
+    }
+
+    .b-tl {
+      top: 0;
+      left: 0;
+    }
+
+    .b-tr {
+      top: 0;
+      right: 0;
+    }
+
+    .b-bl {
+      bottom: 0;
+      left: 0;
+    }
+
+    .b-br {
+      bottom: 0;
+      right: 0;
+    }
+
+    .b-tl::before,
+    .b-tr::before,
+    .b-bl::before,
+    .b-br::before {
+      content: '';
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border: 1px solid var(--cb-color, var(--cyan));
+      opacity: .7;
+    }
+
+    .b-tl::before {
+      top: 0;
+      left: 0;
+      border-right: none;
+      border-bottom: none;
+    }
+
+    .b-tr::before {
+      top: 0;
+      right: 0;
+      border-left: none;
+      border-bottom: none;
+    }
+
+    .b-bl::before {
+      bottom: 0;
+      left: 0;
+      border-right: none;
+      border-top: none;
+    }
+
+    .b-br::before {
+      bottom: 0;
+      right: 0;
+      border-left: none;
+      border-top: none;
+    }
+
+    /* ━━━━━━━━━━━━ MAIN LAYOUT ━━━━━━━━━━━━ */
+    #app {
+      display: flex;
+      height: 100vh;
+      flex-direction: column;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* ━━━━━━━━━━━━ HEADER ━━━━━━━━━━━━ */
+    header {
+      height: 54px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      padding: 0 22px;
+      background: linear-gradient(90deg, var(--bg1), var(--bg0) 50%, var(--bg1));
+      border-bottom: 1px solid var(--dim);
+      position: relative;
+    }
+
+    header::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 5%, var(--cyan) 40%, var(--pink) 60%, transparent 95%);
+      opacity: .3;
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      border-top: 54px solid #00e5ff08;
+      border-right: 200px solid transparent;
+    }
+
+    .header-logo {
+      font-family: var(--f-head);
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 3px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .logo-hex {
+      width: 30px;
+      height: 30px;
+      background: linear-gradient(135deg, var(--orange), var(--pink));
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+    }
+
+    .header-logo .hl {
+      color: var(--cyan);
+    }
+
+    .header-nav {
+      display: flex;
+      gap: 1px;
+      margin: 0 auto;
+    }
+
+    .nav-tab {
+      padding: 8px 22px;
+      font-family: var(--f-mono);
+      font-size: 16px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: transparent;
+      border: none;
+      position: relative;
+      transition: color .2s;
+    }
+
+    .nav-tab::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      transform: scaleX(0);
+      transition: transform .25s;
+    }
+
+    .nav-tab:hover {
+      color: var(--text);
+    }
+
+    .nav-tab.active {
+      color: var(--cyan);
+    }
+
+    .nav-tab.active::before {
+      transform: scaleX(1);
+    }
+
+    .nav-tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 6px;
+      height: 6px;
+      background: var(--cyan);
+      clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-shrink: 0;
+    }
+
+    .live-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 11px;
+      border: 1px solid #00ff8730;
+      background: #00ff8708;
+      font-family: var(--f-mono);
+      font-size: 12px;
+      color: var(--green);
+      letter-spacing: 2px;
+    }
+
+    .live-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: liveBlink 1.4s ease-in-out infinite;
+    }
+
+    @keyframes liveBlink {
+
+      0%,
+      100% {
+        opacity: 1;
+        box-shadow: 0 0 5px var(--green)
+      }
+
+      50% {
+        opacity: .2;
+        box-shadow: none
+      }
+    }
+
+    .uptime-badge {
+      font-family: var(--f-mono);
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 1px;
+    }
+
+    .uptime-badge span {
+      color: var(--cyan);
+    }
+
+    .fb-status {
+      font-family: var(--f-mono);
+      font-size: 11px;
+      letter-spacing: 1px;
+      padding: 3px 10px;
+      border: 1px solid var(--dim);
+      color: var(--muted);
+      transition: all .3s;
+    }
+
+    .fb-status.connected {
+      border-color: #00ff8740;
+      color: var(--green);
+      background: #00ff8710;
+    }
+
+    .fb-status.disconnected {
+      border-color: #ff005740;
+      color: var(--pink);
+      background: #ff005710;
+    }
+
+    .esp-wrap {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .esp-label {
+      font-family: var(--f-mono);
+      font-size: 12px;
+      letter-spacing: 2px;
+      color: var(--green);
+    }
+
+    .mini-toggle {
+      position: relative;
+      width: 42px;
+      height: 20px;
+      cursor: pointer;
+    }
+
+    .mini-toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      position: absolute;
+    }
+
+    .mt-track {
+      position: absolute;
+      inset: 0;
+      background: var(--bg0);
+      border: 1px solid var(--dim);
+      transition: all .2s;
+    }
+
+    .mt-thumb {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 13px;
+      height: 13px;
+      background: var(--muted);
+      clip-path: circle();
+      transition: all .2s;
+    }
+
+    .mini-toggle.on .mt-track {
+      border-color: var(--cyan);
+      background: #00e5ff14;
+    }
+
+    .mini-toggle.on .mt-thumb {
+      left: 25px;
+      background: var(--cyan);
+      box-shadow: 0 0 6px var(--cyan);
+    }
+
+    /* ━━━━━━━━━━━━ TICKER ━━━━━━━━━━━━ */
+    .ticker-bar {
+      height: 26px;
+      flex-shrink: 0;
+      background: var(--bg1);
+      border-bottom: 1px solid var(--dim);
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .ticker-tag {
+      flex-shrink: 0;
+      height: 100%;
+      padding: 0 14px;
+      background: var(--cyan);
+      color: var(--bg0);
+      font-family: var(--f-mono);
+      font-size: 12px;
+      letter-spacing: 3px;
+      display: flex;
+      align-items: center;
+      clip-path: polygon(0 0, calc(100% - 7px) 0, 100% 50%, calc(100% - 7px) 100%, 0 100%);
+    }
+
+    .ticker-scroll {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .ticker-inner {
+      white-space: nowrap;
+      font-family: var(--f-mono);
+      font-size: 12px;
+      animation: tickScroll 45s linear infinite;
+    }
+
+    @keyframes tickScroll {
+      from {
+        transform: translateX(100vw)
+      }
+
+      to {
+        transform: translateX(-100%)
+      }
+    }
+
+    .ti {
+      margin-right: 64px;
+    }
+
+    .ti.ok {
+      color: var(--green);
+    }
+
+    .ti.warn {
+      color: var(--yellow);
+    }
+
+    .ti.danger {
+      color: var(--pink);
+    }
+
+    .ti.default {
+      color: var(--muted);
+    }
+
+    /* ━━━━━━━━━━━━ CONTENT ━━━━━━━━━━━━ */
+    .content-area {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 14px 18px 20px;
+    }
+
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    /* ━━━━━━━━━━━━ DANGER BANNER ━━━━━━━━━━━━ */
+    .danger-banner {
+      display: none;
+      padding: 10px 18px;
+      margin-bottom: 12px;
+      background: #ff005710;
+      border: 1px solid #ff005540;
+      border-left: 3px solid var(--pink);
+      font-family: var(--f-mono);
+      font-size: 11px;
+      color: #ff6090;
+      align-items: center;
+      gap: 12px;
+      animation: bannerPulse .8s infinite;
+    }
+
+    .danger-banner.show {
+      display: flex;
+    }
+
+    @keyframes bannerPulse {
+
+      0%,
+      100% {
+        border-left-color: var(--pink)
+      }
+
+      50% {
+        border-left-color: transparent
+      }
+    }
+
+    /* ━━━━━━━━━━━━ STAT CARDS ━━━━━━━━━━━━ */
+    .stat-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .stat-card {
+      background: var(--bg1);
+      padding: 15px 16px;
+      position: relative;
+      overflow: hidden;
+      border-radius: 15px;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 50px;
+      height: 50px;
+      background: radial-gradient(circle at top right, var(--sc-color, var(--cyan))18, transparent 70%);
+    }
+
+    .stat-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      border-bottom: 10px solid var(--sc-color, var(--cyan));
+      border-right: 10px solid transparent;
+      opacity: .5;
+    }
+
+    .sc-label {
+      font-family: var(--f-pop);
+      font-size: 12px;
+      letter-spacing: 2.5px;
+      color: #fff;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sc-label::before {
+      content: '▸';
+      color: var(--sc-color, var(--cyan));
+      font-size: 10px;
+    }
+
+    .sc-val {
+      font-family: var(--f-head);
+      font-size: 30px;
+      font-weight: 700;
+      color: var(--sc-color, var(--cyan));
+      line-height: 1;
+      margin-bottom: 6px;
+      text-shadow: 0 0 20px currentColor;
+    }
+
+    .sc-sub {
+      font-family: var(--f-mono);
+      font-size: 9px;
+      color: var(--dim);
+      letter-spacing: .5px;
+    }
+
+    /* ━━━━━━━━━━━━ GAUGE ROW ━━━━━━━━━━━━ */
+    .gauge-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .gauge-card {
+      background: var(--bg1);
+      padding: 16px 14px 14px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+      border-radius: 15px;
+    }
+
+    .gauge-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 40%, var(--gc, #00e5ff)08, transparent 65%);
+      pointer-events: none;
+    }
+
+    .gauge-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gc, #00e5ff)60, transparent);
+    }
+
+    .gauge-title {
+      font-family: var(--f-pop);
+      font-size: 12px;
+      letter-spacing: 3px;
+      color: #fff;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .gauge-wrap {
+      position: relative;
+    }
+
+    .gauge-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .gauge-val {
+      font-family: var(--f-head);
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--gc, var(--cyan));
+      text-shadow: 0 0 18px currentColor;
+    }
+
+    .gauge-unit {
+      font-family: var(--f-pop);
+      font-size: 12px;
+      color: rgb(197, 197, 197);
+      margin-top: 2px;
+    }
+
+    .gauge-status-tag {
+      margin-top: 10px;
+      font-family: var(--f-mono);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      padding: 3px 14px;
+      border: 1px solid currentColor;
+    }
+
+    .gauge-thr {
+      margin-top: 6px;
+      font-family: var(--f-mono);
+      font-size: 8px;
+      color: var(--dim);
+      letter-spacing: 1px;
+    }
+
+    /* ━━━━━━━━━━━━ FIRE GAUGE SPECIAL ━━━━━━━━━━━━ */
+    .gauge-card.fire-card .gauge-val {
+      font-size: 20px;
+    }
+
+    .fire-ring-pulse {
+      animation: fireRingPulse .6s ease-in-out infinite;
+    }
+
+    @keyframes fireRingPulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: .3;
+      }
+    }
+
+    /* ━━━━━━━━━━━━ BOTTOM ROW ━━━━━━━━━━━━ */
+    .bottom-row {
+      display: grid;
+      grid-template-rows: 500px 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .map-card {
+      background: var(--bg1);
+      padding: 13px;
+      border-radius: 15px;
+      height: 100%;
+    }
+
+    .map-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .map-title {
+      font-family: var(--f-mono);
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: 3px;
+    }
+
+    .floor-tabs {
+      display: flex;
+      gap: 4px;
+    }
+
+    .ftab {
+      padding: 3px 10px;
+      font-family: var(--f-mono);
+      font-size: 9px;
+      letter-spacing: 1px;
+      border: 1px solid var(--dim);
+      background: transparent;
+      color: var(--muted);
+      transition: all .15s;
+    }
+
+    .ftab.active {
+      border-color: var(--cyan);
+      background: #00e5ff14;
+      color: var(--cyan);
+    }
+
+    .div {
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border-radius: 15px;
+      width: 100%;
+      height: 90%;
+      margin: 0 auto;
+      justify-content: center;
+    }
+
+    .div img {
+      max-width: 100%;
+      max-height: 100%;
+      border-radius: 5px;
+      opacity: 0.7;
+    }
+
+    /* ━━━━━━━━━━━━ FEED ━━━━━━━━━━━━ */
+    .feed-card {
+      background: var(--bg1);
+      padding: 13px;
+      display: flex;
+      flex-direction: column;
+      border-radius: 15px;
+    }
+
+    .feed-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .feed-title {
+      font-family: var(--f-mono);
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: 3px;
+    }
+
+    .feed-count {
+      font-family: var(--f-head);
+      font-size: 10px;
+      color: var(--pink);
+      padding: 2px 8px;
+      border: 1px solid #ff005530;
+      background: #ff005510;
+    }
+
+    .feed-list {
+      flex: 1;
+      overflow-y: auto;
+      max-height: 220px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .feed-item {
+      padding: 7px 10px;
+      border-left: 2px solid var(--fi-c, var(--cyan));
+      background: var(--fi-bg, #00e5ff08);
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      animation: slideIn .3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-8px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    .fi-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .fi-msg {
+      font-family: var(--f-mono);
+      font-size: 11px;
+      color: var(--text);
+      line-height: 1.35;
+    }
+
+    .fi-meta {
+      font-family: var(--f-mono);
+      font-size: 9px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .fi-badge {
+      font-family: var(--f-mono);
+      font-size: 8px;
+      letter-spacing: 1.5px;
+      padding: 2px 7px;
+      border: 1px solid currentColor;
+      text-transform: uppercase;
+      flex-shrink: 0;
+      color: var(--fi-c, var(--cyan));
+      background: var(--fi-bg, #00e5ff08);
+    }
+
+    /* ━━━━━━━━━━━━ CONTROL PANEL ━━━━━━━━━━━━ */
+    .ctrl-panel {
+      background: var(--bg1);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      position: relative;
+      border: 1px solid var(--dim);
+      border-radius: 15px;
+    }
+
+    .ctrl-btn {
+      padding: 8px 16px;
+      font-family: var(--f-mono);
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border: 1px solid var(--cb, var(--dim));
+      background: transparent;
+      color: var(--cb, var(--muted));
+      transition: all .15s;
+      clip-path: polygon(0 0, calc(100% - 7px) 0, 100% 7px, 100% 100%, 7px 100%, 0 calc(100% - 7px));
+    }
+
+    .ctrl-btn:hover {
+      background: color-mix(in srgb, var(--cb, var(--cyan)) 12%, transparent);
+      box-shadow: 0 0 10px color-mix(in srgb, var(--cb, var(--cyan)) 25%, transparent);
+    }
+
+    .ctrl-btn.em-btn {
+      --cb: var(--pink);
+    }
+
+    .ctrl-btn.em-btn.armed {
+      animation: armPulse .7s infinite;
+    }
+
+    @keyframes armPulse {
+
+      0%,
+      100% {
+        border-color: var(--pink);
+        box-shadow: var(--glow-p)
+      }
+
+      50% {
+        border-color: transparent;
+        box-shadow: none
+      }
+    }
+
+    .mode-pill {
+      margin-left: auto;
+      padding: 4px 12px;
+      font-family: var(--f-mono);
+      font-size: 9px;
+      letter-spacing: 2px;
+      border: 1px solid var(--dim);
+      color: var(--muted);
+    }
+
+    /* ━━━━━━━━━━━━ HISTORY ━━━━━━━━━━━━ */
+    .hist-stats {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .hs-card {
+      padding: 10px 16px;
+      background: var(--bg1);
+      border-left: 2px solid var(--hc, var(--cyan));
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .hs-val {
+      font-family: var(--f-head);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--hc, var(--cyan));
+    }
+
+    .hs-lbl {
+      font-family: var(--f-mono);
+      font-size: 8px;
+      color: var(--muted);
+      letter-spacing: 2px;
+    }
+
+    .filter-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .fi-search {
+      flex: 1;
+      min-width: 180px;
+      padding: 8px 13px;
+      background: var(--bg1);
+      border: 1px solid var(--dim);
+      color: var(--text);
+      font-family: var(--f-mono);
+      font-size: 11px;
+      outline: none;
+    }
+
+    .fi-search:focus {
+      border-color: var(--cyan);
+    }
+
+    .fi-search::placeholder {
+      color: var(--muted);
+    }
+
+    .fbtn {
+      padding: 7px 12px;
+      background: transparent;
+      border: 1px solid var(--dim);
+      color: var(--muted);
+      font-family: var(--f-mono);
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      transition: all .15s;
+    }
+
+    .fbtn.active {
+      border-color: var(--cyan);
+      color: var(--cyan);
+      background: #00e5ff10;
+    }
+
+    .exp-btn {
+      padding: 7px 14px;
+      margin-left: auto;
+      background: transparent;
+      border: 1px solid #00ff8730;
+      color: var(--green);
+      font-family: var(--f-mono);
+      font-size: 9px;
+      letter-spacing: 2px;
+      transition: all .15s;
+    }
+
+    .exp-btn:hover {
+      background: #00ff8714;
+      box-shadow: var(--glow-g);
+    }
+
+    .hist-wrap {
+      background: var(--bg1);
+      border: 1px solid var(--dim);
+      overflow: auto;
+      max-height: calc(100vh - 300px);
+    }
+
+    .hist-tbl {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .hist-tbl th {
+      padding: 10px 14px;
+      text-align: left;
+      position: sticky;
+      top: 0;
+      background: var(--bg0);
+      border-bottom: 1px solid var(--dim);
+      font-family: var(--f-mono);
+      font-size: 8px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .hist-tbl td {
+      padding: 8px 14px;
+      font-family: var(--f-mono);
+      font-size: 11px;
+      border-bottom: 1px solid #060f1c;
+      transition: background .1s;
+    }
+
+    .hist-tbl tr:hover td {
+      background: var(--bg1);
+    }
+
+    .hist-tbl td:first-child {
+      color: var(--muted);
+    }
+
+    /* ━━━━━━━━━━━━ SETTINGS ━━━━━━━━━━━━ */
+    .settings-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .sc {
+      background: var(--bg1);
+      padding: 20px;
+      border: 1px solid var(--dim);
+      position: relative;
+    }
+
+    .sc::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      border-top: 30px solid #00e5ff08;
+      border-left: 30px solid transparent;
+    }
+
+    .sc-hdr {
+      font-family: var(--f-mono);
+      font-size: 9px;
+      color: var(--cyan);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--dim);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sc-hdr::before {
+      content: '//';
+      color: var(--dim);
+    }
+
+    .tg {
+      margin-bottom: 18px;
+    }
+
+    .tg-lbl {
+      font-family: var(--f-mono);
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .tg-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .ti label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--f-mono);
+      font-size: 9px;
+      margin-bottom: 7px;
+    }
+
+    .ti label .lc {
+      color: var(--tc, var(--yellow));
+    }
+
+    .ti label .rv {
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    input[type=range] {
+      width: 100%;
+      height: 2px;
+      background: var(--dim);
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 13px;
+      height: 13px;
+      background: var(--tc, var(--cyan));
+      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+      cursor: pointer;
+    }
+
+    .sv-btn {
+      margin-top: 6px;
+      padding: 9px 20px;
+      background: transparent;
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+      font-family: var(--f-mono);
+      font-size: 9px;
+      letter-spacing: 3px;
+      transition: all .15s;
+      clip-path: polygon(0 5px, 5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%);
+    }
+
+    .sv-btn:hover {
+      background: var(--cyan);
+      color: var(--bg0);
+      box-shadow: var(--glow-c);
+    }
+
+    .ni {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 11px 0;
+      border-bottom: 1px solid var(--bg0);
+    }
+
+    .ni-lbl {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-family: var(--f-mono);
+      font-size: 11px;
+      color: var(--text);
+    }
+
+    .ni-icon {
+      font-size: 14px;
+    }
+
+    .ntgl {
+      position: relative;
+      width: 44px;
+      height: 22px;
+      cursor: pointer;
+    }
+
+    .ntgl input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      position: absolute;
+    }
+
+    .ntgl-track {
+      position: absolute;
+      inset: 0;
+      background: var(--bg0);
+      border: 1px solid var(--dim);
+      transition: all .2s;
+    }
+
+    .ntgl-thumb {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 14px;
+      height: 14px;
+      background: var(--muted);
+      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+      transition: all .2s;
+    }
+
+    .ntgl.on .ntgl-track {
+      border-color: var(--cyan);
+      background: #00e5ff14;
+    }
+
+    .ntgl.on .ntgl-thumb {
+      left: 25px;
+      background: var(--cyan);
+      box-shadow: 0 0 7px var(--cyan);
+    }
+
+    .ci {
+      margin-bottom: 13px;
+    }
+
+    .ci label {
+      display: block;
+      font-family: var(--f-mono);
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: 2px;
+      margin-bottom: 6px;
+    }
+
+    .ci input {
+      width: 100%;
+      padding: 9px 12px;
+      background: var(--bg0);
+      border: 1px solid var(--dim);
+      color: var(--text);
+      font-family: var(--f-mono);
+      font-size: 11px;
+      outline: none;
+    }
+
+    .ci input:focus {
+      border-color: var(--cyan);
+    }
+
+    /* ━━━━━━━━━━━━ DANGER BODY ━━━━━━━━━━━━ */
+    body.in-danger .grid-bg {
+      animation: gridDanger .6s ease-in-out infinite !important;
+    }
+
+    @keyframes gridDanger {
+
+      0%,
+      100% {
+        opacity: .3
+      }
+
+      50% {
+        opacity: .06
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="grid-bg"></div>
+  <div class="scanlines"></div>
+
+  <!-- ══ MAIN APP ══ -->
+  <div id="app">
+
+    <!-- HEADER -->
+    <header>
+      <div class="header-logo">
+        <div class="logo-hex">🔥</div>
+        S<span class="hl">E a</span>M
+      </div>
+      <nav class="header-nav">
+        <button class="nav-tab active" data-page="dashboard">DASHBOARD</button>
+        <button class="nav-tab" data-page="history">RIWAYAT</button>
+        <button class="nav-tab" data-page="settings">PENGATURAN</button>
+      </nav>
+      <div class="header-right">
+        <div class="live-pill"><span class="live-dot"></span>LIVE</div>
+        <div class="uptime-badge" style="display: none;">UPTIME&nbsp;<span id="uptime-val">00:00:00</span></div>
+        <div class="fb-status disconnected" id="fb-status">⬡ FIREBASE</div>
+        <div class="esp-wrap" style="display: none;">
+          <label class="mini-toggle on" id="esp-sw">
+            <input type="checkbox" id="esp-chk" checked>
+            <div class="mt-track"></div>
+            <div class="mt-thumb"></div>
+          </label>
+          <span class="esp-label" id="esp-lbl" >ESP32:ON</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- TICKER -->
+    <div class="ticker-bar">
+      <div class="ticker-tag">LIVE FEED</div>
+      <div class="ticker-scroll">
+        <div class="ticker-inner" id="ticker">
+          <span class="ti ok">✦ SISTEM AKTIF</span>
+          <span class="ti ok">✦ MENGHUBUNGKAN FIREBASE...</span>
+          <span class="ti default">✦ SEMUA SENSOR NORMAL</span>
+          <span class="ti default">✦ FIREGUARD PRO v2.0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content-area">
+
+      <!-- ─── DASHBOARD ─── -->
+      <div class="page active" id="page-dashboard">
+
+        <!-- Danger Banner -->
+        <div class="danger-banner" id="d-banner">
+          <span>🔥</span>
+          <span id="d-banner-txt">PERINGATAN KEBAKARAN TERDETEKSI!</span>
+        </div>
+
+        <!-- Stat Cards -->
+        <div class="stat-row">
+          <div class="stat-card" style="--sc-color:#00ff87">
+            <div class="sc-label">STATUS SISTEM</div>
+            <div class="sc-val" id="sc-status" style="color:#00ff87">AMAN</div>
+            <div class="sc-sub">Semua sensor dipantau</div>
+          </div>
+          <div class="stat-card" style="--sc-color:#00e5ff">
+            <div class="sc-label">KONEKSI ESP32</div>
+            <div class="sc-val" id="sc-esp">ONLINE</div>
+            <div class="sc-sub" id="sc-esp-sub">Firebase aktif</div>
+          </div>
+          <div class="stat-card" style="--sc-color:#ffd600">
+            <div class="sc-label">MODE OPERASI</div>
+            <div class="sc-val" id="sc-mode" style="color:#ffd600">AUTO</div>
+            <div class="sc-sub">AI ESP32 aktif</div>
+          </div>
+          <div class="stat-card" style="--sc-color:#ff0057">
+            <div class="sc-label">ALERT AKTIF</div>
+            <div class="sc-val" id="sc-alerts" style="color:#ff0057">0</div>
+            <div class="sc-sub" id="sc-alerts-sub">0 total log</div>
+          </div>
+        </div>
+
+        <!-- Gauge Row -->
+        <div class="gauge-row">
+
+          <!-- GAUGE 1: HUMIDITY -->
+          <div class="gauge-card" style="--gc:#00e5ff">
+            <div class="gauge-title">HUMIDITY</div>
+            <div class="gauge-wrap">
+              <svg id="g-hum" width="150" height="150" viewBox="0 0 150 150"></svg>
+              <div class="gauge-center">
+                <div class="gauge-val" id="gv-hum" style="color:#00e5ff">--</div>
+                <div class="gauge-unit">%</div>
+              </div>
+            </div>
+            <div class="gauge-status-tag" id="gs-hum" style="color:#00ff87">● NORMAL</div>
+            <div class="gauge-thr" id="gt-hum">⚠80% · ✕90%</div>
+          </div>
+
+          <!-- GAUGE 2: TEMPERATURE -->
+          <div class="gauge-card" style="--gc:#ff6b1a">
+            <div class="gauge-title">TEMPERATURE</div>
+            <div class="gauge-wrap">
+              <svg id="g-temp" width="150" height="150" viewBox="0 0 150 150"></svg>
+              <div class="gauge-center">
+                <div class="gauge-val" id="gv-temp" style="color:#ff6b1a">--</div>
+                <div class="gauge-unit">°C</div>
+              </div>
+            </div>
+            <div class="gauge-status-tag" id="gs-temp" style="color:#00ff87">● AMAN</div>
+            <div class="gauge-thr" id="gt-temp">⚠35 · ✕50 °C</div>
+          </div>
+
+          <!-- GAUGE 3: DETEKTOR API -->
+          <div class="gauge-card fire-card" style="--gc:#ff0057">
+            <div class="gauge-title">DETEKTOR API</div>
+            <div class="gauge-wrap">
+              <svg id="g-fire" width="150" height="150" viewBox="0 0 150 150"></svg>
+              <div class="gauge-center">
+                <div class="gauge-val" id="gv-fire" style="color:#00ff87; font-size:18px;">AMAN</div>
+                <div class="gauge-unit" id="gu-fire">IR Sensor</div>
+              </div>
+            </div>
+            <div class="gauge-status-tag" id="gs-fire" style="color:#00ff87">● TIDAK ADA API</div>
+            <div class="gauge-thr" id="gt-fire">→ KANAN: AMAN · ← KIRI: AMAN</div>
+          </div>
+
+        </div>
+
+        <!-- Map + Feed -->
+        <div class="bottom-row">
+          <div class="map-card">
+            <div class="map-header">
+              <div class="map-title">// PETA GEDUNG LIVE</div>
+              <div class="floor-tabs">
+                <button class="ftab active" data-floor="1">LT 1</button>
+                <button class="ftab" data-floor="2">LT 2</button>
+              </div>
+            </div>
+            <div class="div">
+              <img src="Lantai1.png" alt="Map Floor 1" id="map-floor-1">
+            </div>
+          </div>
+          <div class="feed-card">
+            <div class="feed-header">
+              <div class="map-title">// LOG AKTIVITAS LIVE</div>
+              <div class="feed-count" id="feed-danger-ct">0 BAHAYA</div>
+            </div>
+            <div class="feed-list" id="feed-list"></div>
+          </div>
+        </div>
+
+        <!-- Control Panel -->
+        <div class="ctrl-panel">
+          <button class="ctrl-btn" id="btn-mode" style="--cb:#ffd600">⚙ SWITCH → MANUAL</button>
+          <button class="ctrl-btn" id="btn-doors" style="--cb:#00e5ff;display:none">⌗ BUKA SEMUA PINTU</button>
+          <button class="ctrl-btn" id="btn-led" style="--cb:#ffd600;display:none">◈ LED EVAKUASI ON</button>
+          <button class="ctrl-btn em-btn" id="btn-em">⚡ EMERGENCY TRIGGER</button>
+          <button class="ctrl-btn" id="btn-reset" style="--cb:#4a6a80;margin-left:auto">↺ RESET SISTEM</button>
+          <div class="mode-pill" id="mode-pill">MODE: OTOMATIS</div>
+        </div>
+
+      </div>
+
+      <!-- ─── HISTORY ─── -->
+      <div class="page" id="page-history">
+        <div class="hist-stats" id="hist-stats"></div>
+        <div class="filter-row">
+          <input class="fi-search" type="text" id="hist-q" placeholder="// CARI LOG...">
+          <button class="fbtn active" data-f="all">SEMUA</button>
+          <button class="fbtn" data-f="danger">BAHAYA</button>
+          <button class="fbtn" data-f="warning">WASPADA</button>
+          <button class="fbtn" data-f="info">INFO</button>
+          <button class="fbtn" data-f="success">OK</button>
+          <button class="exp-btn" id="exp-csv">⬇ EXPORT CSV</button>
+        </div>
+        <div class="hist-wrap">
+          <table class="hist-tbl">
+            <thead>
+              <tr>
+                <th>TIMESTAMP</th>
+                <th>LEVEL</th>
+                <th>PESAN</th>
+                <th>SUMBER</th>
+              </tr>
+            </thead>
+            <tbody id="hist-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ─── SETTINGS ─── -->
+      <div class="page" id="page-settings">
+        <div class="settings-grid">
+          <div class="sc">
+            <div class="sc-hdr">KONFIGURASI THRESHOLD</div>
+
+            <div class="tg">
+              <div class="tg-lbl">KELEMBABAN (%)</div>
+              <div class="tg-row">
+                <div class="ti" style="--tc:#ffd600">
+                  <label><span class="lc">PERINGATAN</span><span class="rv" id="tv-hw">80</span></label>
+                  <input type="range" id="thr-hw" min="0" max="100" value="80" style="accent-color:#ffd600">
+                </div>
+                <div class="ti" style="--tc:#ff0057">
+                  <label><span class="lc">BAHAYA</span><span class="rv" id="tv-hd">90</span></label>
+                  <input type="range" id="thr-hd" min="0" max="100" value="90" style="accent-color:#ff0057">
+                </div>
+              </div>
+            </div>
+
+            <div class="tg">
+              <div class="tg-lbl">SUHU (°C)</div>
+              <div class="tg-row">
+                <div class="ti" style="--tc:#ffd600">
+                  <label><span class="lc">PERINGATAN</span><span class="rv" id="tv-tw">35</span></label>
+                  <input type="range" id="thr-tw" min="0" max="80" value="35" style="accent-color:#ffd600">
+                </div>
+                <div class="ti" style="--tc:#ff0057">
+                  <label><span class="lc">BAHAYA</span><span class="rv" id="tv-td">50</span></label>
+                  <input type="range" id="thr-td" min="0" max="100" value="50" style="accent-color:#ff0057">
+                </div>
+              </div>
+            </div>
+
+            <div class="tg">
+              <div class="tg-lbl">DETEKTOR API (IR SENSOR)</div>
+              <div style="padding:12px;background:var(--bg0);border:1px solid var(--dim);
+                font-family:var(--f-mono);font-size:10px;color:var(--muted);line-height:1.8;">
+                Sensor IR membaca status <span style="color:var(--green)">AMAN</span>
+                atau <span style="color:var(--pink)">API TERDETEKSI</span> secara biner.<br>
+                Tidak ada threshold — alarm otomatis saat IR aktif.
+              </div>
+            </div>
+
+            <button class="sv-btn" id="save-thr">SIMPAN THRESHOLD</button>
+          </div>
+
+          <div class="sc">
+            <div class="sc-hdr">NOTIFIKASI</div>
+            <div id="notif-wrap"></div>
+            <div class="sc-hdr" style="margin-top:20px">KONFIGURASI KONEKSI</div>
+            <div class="ci"><label>FIREBASE DATABASE URL</label>
+              <input type="text" id="ci-fb-url"
+                value="https://monitoring-1f8d4-default-rtdb.asia-southeast1.firebasedatabase.app">
+            </div>
+            <div class="ci"><label>TELEGRAM BOT TOKEN</label>
+              <input type="text" value="7123456:AAxxxxxxxxxxxxxxx">
+            </div>
+            <div class="ci"><label>TELEGRAM CHAT ID</label>
+              <input type="text" value="-100123456789">
+            </div>
+            <button class="sv-btn" id="save-conn">SIMPAN &amp; RECONNECT</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const FIREBASE_CONFIG = {
+      apiKey: "AIzaSyA24YeIfcyr3KGh8eyyAIvVAOwXMMhLFBo",
+      authDomain: "monitoring-1f8d4.firebaseapp.com",
+      databaseURL: "https://monitoring-1f8d4-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "monitoring-1f8d4",
+      storageBucket: "monitoring-1f8d4.firebasestorage.app",
+      messagingSenderId: "877662538394",
+      appId: "1:877662538394:web:c2153d8e85ae3eed856d23",
+    };
+    const FB_PATH = "fireguard/sensors";
+
+    const LC = { danger: '#ff0057', warning: '#ffd600', info: '#00e5ff', success: '#00ff87' }
+    const LB = { danger: '#ff005714', warning: '#ffd60014', info: '#00e5ff14', success: '#00ff8714' }
+
+    const S = {
+      on: true,
+      esp32: true,
+      mode: 'auto',
+      floor: 1, armEM: false, t0: Date.now(),
+      thr: {
+        humidity: { w: 80, d: 90 },
+        temperature: { w: 35, d: 50 },
+      },
+      fb: {
+        suhu: null,
+        kelembaban: null,
+        api_kanan: false,
+        api_kiri: false,
+        dht_valid: false,
+        connected: false,
+        lastUpdate: null,
+      },
+      log: [],
+      notifs: { telegram: true, email: false, sound: true, db: true },
+    }
+
+    let _prevFireState = false
+
+    function initFirebase() {
+      try {
+        fbApp = firebase.initializeApp(FIREBASE_CONFIG)
+        fbDb = firebase.database()
+        fbRef = fbDb.ref(FB_PATH)
+
+        fbRef.on('value', snapshot => {
+          const data = snapshot.val()
+          if (!data) return
+
+          S.fb.suhu = typeof data.suhu === 'number' ? data.suhu : null
+          S.fb.kelembaban = typeof data.kelembaban === 'number' ? data.kelembaban : null
+          S.fb.api_kanan = !!data.api_kanan
+          S.fb.api_kiri = !!data.api_kiri
+          S.fb.dht_valid = !!data.dht_valid
+          S.fb.connected = true
+          S.fb.lastUpdate = new Date()
+
+          const fbEl = q('fb-status')
+          fbEl.textContent = '⬡ FIREBASE'
+          fbEl.className = 'fb-status connected'
+          q('sc-esp').textContent = 'ONLINE'
+          q('sc-esp').style.color = '#00e5ff'
+          q('sc-esp-sub').textContent = 'Firebase realtime'
+
+          const fireNow = S.fb.api_kanan || S.fb.api_kiri
+          if (fireNow && !_prevFireState) {
+            const spots = [S.fb.api_kanan ? 'SENSOR KANAN' : '', S.fb.api_kiri ? 'SENSOR KIRI' : '']
+              .filter(Boolean).join(' + ')
+            pushLog('danger', `🔥 API TERDETEKSI — ${spots} aktif!`, 'IR Sensor')
+          } else if (!fireNow && _prevFireState) {
+            pushLog('success', 'API tidak lagi terdeteksi — sensor kembali normal', 'IR Sensor')
+          }
+          _prevFireState = fireNow
+
+          updateGauges()
+          updateStats()
+          updateTicker()
+        })
+
+        fbDb.ref('.info/connected').on('value', snap => {
+          const online = snap.val()
+          if (!online) {
+            S.fb.connected = false
+            const fbEl = q('fb-status')
+            fbEl.textContent = '⬡ OFFLINE'
+            fbEl.className = 'fb-status disconnected'
+            q('sc-esp').textContent = 'OFFLINE'
+            q('sc-esp').style.color = '#ff0057'
+            q('sc-esp-sub').textContent = 'Firebase terputus'
+            pushLog('warning', 'Koneksi Firebase terputus', 'Network')
+          }
+        })
+
+        pushLog('success', 'Firebase Realtime Database terhubung', 'System')
+      } catch (err) {
+        console.error('Firebase error:', err)
+        pushLog('warning', 'Gagal inisialisasi Firebase: ' + err.message, 'System')
+      }
+    }
+
+    const pad = n => String(n).padStart(2, '0')
+    const fmtT = d => `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
+    const fmtD = d => d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })
+    function q(id) { return document.getElementById(id) }
+
+    function numStatus(v, thr) {
+      return v >= thr.d ? 'danger' : v >= thr.w ? 'warning' : 'safe'
+    }
+    function sColor(s) {
+      return s === 'danger' ? '#ff0057' : s === 'warning' ? '#ffd600' : '#00ff87'
+    }
+    function sLabel(s) {
+      return s === 'danger' ? 'BAHAYA' : s === 'warning' ? 'WASPADA' : 'AMAN'
+    }
+    function pushLog(level, msg, room) {
+      S.log.push({ level, msg, room, time: new Date() })
+      renderFeed(); renderHistStats(); updateTicker()
+    }
+
+    function polar(cx, cy, r, deg) {
+      const a = (deg - 90) * Math.PI / 180
+      return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) }
+    }
+    function arcD(cx, cy, r, a0, a1) {
+      const s = polar(cx, cy, r, a0), e = polar(cx, cy, r, a1)
+      const lg = (a1 - a0) > 180 ? 1 : 0
+      return `M${s.x} ${s.y} A${r} ${r} 0 ${lg} 1 ${e.x} ${e.y}`
+    }
+    function drawGauge(id, pct, color, pulse = false) {
+      const svg = q(id); if (!svg) return
+      const cx = 75, cy = 75, r = 57, A0 = -210, SPAN = 240
+      const A1 = A0 + SPAN * Math.min(Math.max(pct, 0), 1)
+      const fid = id + 'F'
+      let ticks = '', dots = ''
+      for (let i = 0; i <= 12; i++) {
+        const a = A0 + SPAN * (i / 12), p0 = polar(cx, cy, r - (i % 4 === 0 ? 9 : 5), a), p1 = polar(cx, cy, r + 1, a)
+        ticks += `<line x1="${p0.x}" y1="${p0.y}" x2="${p1.x}" y2="${p1.y}"
+      stroke="${i % 4 === 0 ? '#2a4a60' : '#1a3050'}" stroke-width="${i % 4 === 0 ? 1.5 : 1}"/>`
+      }
+      for (let i = 0; i <= 24; i++) {
+        const a = A0 + SPAN * (i / 24), p = polar(cx, cy, r + 7, a), lit = (i / 24) <= pct
+        dots += `<circle cx="${p.x}" cy="${p.y}" r="1.5"
+      fill="${lit ? color : '#1a3050'}" opacity="${lit ? 1 : 0.4}"
+      ${lit && pulse ? `class="fire-ring-pulse"` : ''}/>`
+      }
+      svg.innerHTML = `
+    <defs><filter id="${fid}">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter></defs>
+    <circle cx="${cx}" cy="${cy}" r="70" fill="none" stroke="#0a1628" stroke-width="1"/>
+    ${dots}${ticks}
+    <path d="${arcD(cx, cy, r, A0, A0 + SPAN)}" fill="none" stroke="#0f1e35" stroke-width="9" stroke-linecap="round"/>
+    <path d="${arcD(cx, cy, r, A0, A1)}" fill="none" stroke="${color}" stroke-width="9"
+      stroke-linecap="round" filter="url(#${fid})"/>
+    <path d="${arcD(cx, cy, r, A0, A1)}" fill="none" stroke="${color}" stroke-width="2.5"
+      stroke-linecap="round" opacity=".5"/>
+    <circle cx="${cx}" cy="${cy}" r="2.5" fill="${color}" opacity=".7"/>
+  `
+    }
+
+    function updateGauges() {
+      const hum = S.fb.kelembaban
+      if (hum !== null && S.fb.dht_valid) {
+        const hs = numStatus(hum, S.thr.humidity)
+        const hc = sColor(hs)
+        q('gv-hum').textContent = hum.toFixed(1)
+        q('gv-hum').style.color = hc
+        q('gs-hum').textContent = '● ' + (hs === 'safe' ? 'NORMAL' : sLabel(hs))
+        q('gs-hum').style.color = hc
+        q('gt-hum').textContent = `⚠${S.thr.humidity.w}% · ✕${S.thr.humidity.d}%`
+        drawGauge('g-hum', hum / 100, hc)
+      } else {
+        q('gv-hum').textContent = '--'
+        q('gs-hum').textContent = '● MENUNGGU DATA'
+        q('gs-hum').style.color = '#4a6a80'
+        drawGauge('g-hum', 0, '#4a6a80')
+      }
+
+      const temp = S.fb.suhu
+      if (temp !== null && S.fb.dht_valid) {
+        const ts = numStatus(temp, S.thr.temperature)
+        const tc = sColor(ts)
+        q('gv-temp').textContent = temp.toFixed(1)
+        q('gv-temp').style.color = tc
+        q('gs-temp').textContent = '● ' + sLabel(ts)
+        q('gs-temp').style.color = tc
+        q('gt-temp').textContent = `⚠${S.thr.temperature.w} · ✕${S.thr.temperature.d} °C`
+        drawGauge('g-temp', temp / 80, tc)
+      } else {
+        q('gv-temp').textContent = '--'
+        q('gs-temp').textContent = '● MENUNGGU DATA'
+        q('gs-temp').style.color = '#4a6a80'
+        drawGauge('g-temp', 0, '#4a6a80')
+      }
+
+      const fireKanan = S.fb.api_kanan
+      const fireKiri = S.fb.api_kiri
+      const fireAny = fireKanan || fireKiri
+      const fc = fireAny ? '#ff0057' : '#00ff87'
+      const fpct = fireAny ? 1.0 : 0.05
+
+      q('gv-fire').textContent = fireAny ? 'API!' : 'AMAN'
+      q('gv-fire').style.color = fc
+      q('gu-fire').textContent = fireAny
+        ? (fireKanan && fireKiri ? '→ KANAN + ← KIRI' : fireKanan ? '→ SENSOR KANAN' : '← SENSOR KIRI')
+        : 'IR Sensor'
+      q('gs-fire').textContent = fireAny ? '● API TERDETEKSI!' : '● TIDAK ADA API'
+      q('gs-fire').style.color = fc
+      q('gt-fire').textContent =
+        `→ KANAN: ${fireKanan ? '🔥API!' : 'AMAN'} · ← KIRI: ${fireKiri ? '🔥API!' : 'AMAN'}`
+
+      drawGauge('g-fire', fpct, fc, fireAny)
+    }
+
+    function updateStats() {
+      const fireAny = S.fb.api_kanan || S.fb.api_kiri
+      const tempDanger = S.fb.suhu !== null && S.fb.suhu >= S.thr.temperature.d
+      const anyDanger = fireAny || tempDanger
+
+      const sv = q('sc-status')
+      if (anyDanger) {
+        sv.textContent = 'BAHAYA'; sv.style.color = '#ff0057'
+        q('d-banner').classList.add('show')
+        const spots = []
+        if (fireAny) spots.push('API IR TERDETEKSI')
+        if (tempDanger) spots.push(`SUHU KRITIS ${S.fb.suhu?.toFixed(1)}°C`)
+        q('d-banner-txt').textContent = '🔥 ' + spots.join(' · ')
+        document.body.classList.add('in-danger')
+      } else {
+        sv.textContent = 'AMAN'; sv.style.color = '#00ff87'
+        q('d-banner').classList.remove('show')
+        document.body.classList.remove('in-danger')
+      }
+
+      const dangerCount = S.log.filter(a => a.level === 'danger').length
+      q('sc-alerts').textContent = dangerCount
+      q('sc-alerts-sub').textContent = `${S.log.length} total log`
+      q('sc-mode').textContent = S.mode === 'auto' ? 'AUTO' : 'MANUAL'
+      q('sc-mode').style.color = S.mode === 'auto' ? '#ffd600' : '#ff6b1a'
+    }
+
+    function updateTicker() {
+      const t = q('ticker'); if (!t) return
+      const recent = [...S.log].reverse().slice(0, 5)
+      t.innerHTML = recent.map(a => {
+        const cls = a.level === 'danger' ? 'danger' : a.level === 'warning' ? 'warn' : 'ok'
+        return `<span class="ti ${cls}">[${fmtT(a.time)}] ${a.room}: ${a.msg}</span>`
+      }).join('') +
+        `<span class="ti ${S.fb.connected ? 'ok' : 'danger'}">✦ FIREBASE: ${S.fb.connected ? 'TERHUBUNG' : 'OFFLINE'}</span>` +
+        `<span class="ti default">✦ MODE: ${S.mode.toUpperCase()}</span>`
+    }
+
+    function renderFeed() {
+      const list = q('feed-list'); if (!list) return
+      list.innerHTML = [...S.log].reverse().slice(0, 60).map(a => {
+        const c = LC[a.level] || '#94a3b8', bg = LB[a.level] || '#0a1628'
+        return `<div class="feed-item" style="--fi-c:${c};--fi-bg:${bg}">
+      <div class="fi-body">
+        <div class="fi-msg">${a.msg}</div>
+        <div class="fi-meta">${a.room} · ${fmtT(a.time)}</div>
+      </div>
+      <div class="fi-badge">${a.level}</div>
+    </div>`
+      }).join('')
+      q('feed-danger-ct').textContent = `${S.log.filter(a => a.level === 'danger').length} BAHAYA`
+    }
+
+    function renderHistStats() {
+      const c = q('hist-stats'); if (!c) return
+      const counts = {
+        total: S.log.length,
+        danger: S.log.filter(a => a.level === 'danger').length,
+        warn: S.log.filter(a => a.level === 'warning').length,
+        ok: S.log.filter(a => a.level === 'info' || a.level === 'success').length,
+      }
+      c.innerHTML = [
+        { l: 'TOTAL LOG', v: counts.total, hc: '#94a3b8' },
+        { l: 'BAHAYA', v: counts.danger, hc: '#ff0057' },
+        { l: 'WASPADA', v: counts.warn, hc: '#ffd600' },
+        { l: 'INFO / OK', v: counts.ok, hc: '#00ff87' },
+      ].map(i => `<div class="hs-card" style="--hc:${i.hc}">
+    <div class="hs-val">${i.v}</div><div class="hs-lbl">${i.l}</div>
+  </div>`).join('') + '<div style="flex:1"></div>'
+    }
+
+    let histFilter = 'all', histQ = ''
+    function renderHistTable() {
+      const tb = q('hist-body'); if (!tb) return
+      const rows = [...S.log].reverse().filter(a => {
+        if (histFilter !== 'all' && a.level !== histFilter) return false
+        if (histQ) {
+          const q2 = histQ.toLowerCase()
+          return a.msg.toLowerCase().includes(q2) || a.room.toLowerCase().includes(q2)
+        }
+        return true
+      })
+      tb.innerHTML = rows.map(a => {
+        const c = LC[a.level] || '#94a3b8'
+        return `<tr>
+      <td>${fmtD(a.time)} ${fmtT(a.time)}</td>
+      <td><span style="display:inline-block;padding:2px 8px;border:1px solid ${c};
+        background:${c}18;color:${c};font-size:8.5px;letter-spacing:1.5px;text-transform:uppercase">
+        ${a.level}</span></td>
+      <td style="color:#e2e8f0">${a.msg}</td>
+      <td>${a.room}</td>
+    </tr>`
+      }).join('') || `<tr><td colspan="4" style="text-align:center;padding:32px;color:#1a3050">TIDAK ADA LOG</td></tr>`
+    }
+
+    function renderNotifs() {
+      const c = q('notif-wrap'); if (!c) return
+      const items = [
+        { k: 'telegram', i: '📡', l: 'Notifikasi Telegram Bot' },
+        { k: 'email', i: '📧', l: 'Notifikasi Email' },
+        { k: 'sound', i: '🔊', l: 'Alarm Suara Browser' },
+        { k: 'db', i: '💾', l: 'Log Otomatis Database' },
+      ]
+      c.innerHTML = items.map(it => `
+    <div class="ni">
+      <div class="ni-lbl"><span class="ni-icon">${it.i}</span>${it.l}</div>
+      <div class="ntgl ${S.notifs[it.k] ? 'on' : ''}" onclick="flipNotif('${it.k}',this)">
+        <input type="checkbox" ${S.notifs[it.k] ? 'checked' : ''}>
+        <div class="ntgl-track"></div><div class="ntgl-thumb"></div>
+      </div>
+    </div>`).join('')
+    }
+    function flipNotif(k, el) {
+      S.notifs[k] = !S.notifs[k]; el.classList.toggle('on', S.notifs[k])
+    }
+
+    setInterval(() => {
+      if (!S.on) return
+      const e = Math.floor((Date.now() - S.t0) / 1000)
+      const v = q('uptime-val')
+      if (v) v.textContent =
+        `${pad(Math.floor(e / 3600))}:${pad(Math.floor((e % 3600) / 60))}:${pad(e % 60)}`
+    }, 1000)
+
+    document.querySelectorAll('.nav-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.nav-tab,.page').forEach(el => el.classList.remove('active'))
+        btn.classList.add('active')
+        const pg = q('page-' + btn.dataset.page)
+        if (pg) {
+          pg.classList.add('active')
+          if (btn.dataset.page === 'history') { renderHistStats(); renderHistTable() }
+          if (btn.dataset.page === 'settings') renderNotifs()
+        }
+      })
+    })
+
+    document.querySelectorAll('.ftab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.ftab').forEach(b => b.classList.remove('active'))
+        btn.classList.add('active')
+        S.floor = parseInt(btn.dataset.floor)
+        const mapImg = q('map-floor-1')
+        if (mapImg) mapImg.src = S.floor === 1 ? 'Lantai1.png' : 'Lantai2.png'
+      })
+    })
+
+    q('btn-mode').addEventListener('click', () => {
+      S.mode = S.mode === 'auto' ? 'manual' : 'auto'
+      const man = S.mode === 'manual'
+      q('btn-mode').textContent = man ? '⚙ SWITCH → AUTO' : '⚙ SWITCH → MANUAL'
+      q('btn-mode').style.setProperty('--cb', man ? '#ff6b1a' : '#ffd600')
+      q('btn-doors').style.display = man ? '' : 'none'
+      q('btn-led').style.display = man ? '' : 'none'
+      q('mode-pill').textContent = `MODE: ${man ? 'MANUAL' : 'OTOMATIS'}`
+      pushLog('info', `Mode diubah ke ${man ? 'Manual' : 'Otomatis'}`, 'Operator')
+    })
+    q('btn-doors').addEventListener('click', () =>
+      pushLog('info', 'Semua pintu dibuka untuk evakuasi', 'Semua Lantai'))
+    q('btn-led').addEventListener('click', () =>
+      pushLog('info', 'Semua LED evakuasi dinyalakan', 'Semua Lantai'))
+
+    const em = q('btn-em')
+    em.addEventListener('click', () => {
+      if (!S.armEM) {
+        S.armEM = true; em.textContent = '⚡ KONFIRMASI? TEKAN SEKALI LAGI'; em.classList.add('armed')
+        setTimeout(() => { S.armEM = false; em.classList.remove('armed'); em.textContent = '⚡ EMERGENCY TRIGGER' }, 4500)
+        return
+      }
+      S.armEM = false; em.classList.remove('armed'); em.textContent = '⚡ EMERGENCY TRIGGER'
+      S.mode = 'manual'; q('mode-pill').textContent = 'MODE: MANUAL'
+      q('btn-doors').style.display = q('btn-led').style.display = ''
+      pushLog('danger', '🚨 EMERGENCY TRIGGER — Seluruh prosedur evakuasi aktif', 'Semua Lantai')
+    })
+    q('btn-reset').addEventListener('click', () => {
+      S.mode = 'auto'; S.armEM = false
+      em.classList.remove('armed'); em.textContent = '⚡ EMERGENCY TRIGGER'
+      q('btn-doors').style.display = q('btn-led').style.display = 'none'
+      q('mode-pill').textContent = 'MODE: OTOMATIS'
+      q('btn-mode').textContent = '⚙ SWITCH → MANUAL'
+      q('btn-mode').style.setProperty('--cb', '#ffd600')
+      pushLog('success', 'Sistem direset — mode otomatis aktif kembali', 'Semua Lantai')
+    })
+
+    q('esp-chk').addEventListener('change', function () {
+      S.esp32 = this.checked
+      q('esp-sw').classList.toggle('on', this.checked)
+      q('esp-lbl').textContent = `ESP32:${this.checked ? 'ON' : 'OFF'}`
+      q('esp-lbl').style.color = this.checked ? '#00ff87' : '#ff0057'
+      pushLog(this.checked ? 'success' : 'warning',
+        `ESP32 toggle manual: ${this.checked ? 'ON' : 'OFF'}`, 'Operator')
+    })
+
+    document.querySelectorAll('.fbtn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'))
+        btn.classList.add('active'); histFilter = btn.dataset.f; renderHistTable()
+      })
+    })
+    q('hist-q').addEventListener('input', function () { histQ = this.value; renderHistTable() })
+    q('exp-csv').addEventListener('click', () => {
+      const rows = ['Waktu,Level,Pesan,Sumber',
+        ...S.log.map(a => `"${fmtD(a.time)} ${fmtT(a.time)}",${a.level},"${a.msg}","${a.room}"`)
+      ].join('\n')
+      const url = URL.createObjectURL(new Blob([rows], { type: 'text/csv' }))
+      Object.assign(document.createElement('a'), { href: url, download: 'fireguard_log.csv' }).click()
+    })
+
+      ;[
+        ['thr-hw', 'humidity', 'w', 'tv-hw'],
+        ['thr-hd', 'humidity', 'd', 'tv-hd'],
+        ['thr-tw', 'temperature', 'w', 'tv-tw'],
+        ['thr-td', 'temperature', 'd', 'tv-td'],
+      ].forEach(([id, sens, lvl, valId]) => {
+        const el = q(id), vl = q(valId); if (!el) return
+        el.addEventListener('input', function () {
+          S.thr[sens][lvl] = parseInt(this.value); vl.textContent = this.value; updateGauges()
+        })
+      })
+    q('save-thr').addEventListener('click', () => pushLog('success', 'Threshold diperbarui', 'Sistem'))
+    q('save-conn').addEventListener('click', () => {
+      pushLog('info', 'Konfigurasi disimpan — reload halaman untuk reconnect', 'Sistem')
+    })
+
+    function init() {
+      S.t0 = Date.now()
+      updateGauges()
+      updateStats()
+      renderFeed()
+      renderHistStats()
+      renderNotifs()
+      updateTicker()
+      initFirebase()
+      pushLog('info', 'FireGuard PRO v2.0 aktif — menunggu data ESP32', 'System')
+    }
+
+    // Otomatis jalankan aplikasi saat jendela dimuat
+    window.addEventListener('load', () => {
+      init()
+    })
+    // ✅ TAMBAHAN BARU: Ubah warna glow kartu secara dinamis
+const fireCard = document.querySelector('.gauge-card.fire-card')
+if (fireCard) {
+  fireCard.style.setProperty('--gc', fc)
+  fireCard.classList.toggle('fire-active', fireAny)
+}
+
+// ✅ TAMBAHAN BARU: Ganti gambar lantai sesuai status api
+const mapImg = q('map-floor-1')
+if (mapImg) {
+  if (S.floor === 1) {
+    mapImg.src = fireBawah ? 'fire.jpg' : 'Lantai1.jpg'
+  } else {
+    mapImg.src = fireAtas ? 'fire.jpg' : 'Lantai2.jpg'
+  }
+}
+  </script>
+</body>
+
+</html>
