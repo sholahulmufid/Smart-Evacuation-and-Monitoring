@@ -255,19 +255,34 @@
       flex-shrink: 0;
     }
 
-    .logo-hex {
-      width: 30px;
-      height: 30px;
-      background: linear-gradient(135deg, var(--orange), var(--pink));
-      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
-    }
+.logo-hex {
+  width: 30px;
+  height: 35px; /* Sedikit dinaikkan tingginya agar bentuk api lebih proporsional */
+  background: linear-gradient(180deg, var(--orange), var(--pink)); /* Diubah ke 180deg agar gradasi warna merah/pink di bawah dan orange/kuning di atas */
+  
+  /* Clip-path baru untuk bentuk api */
+  clip-path: polygon(
+    50% 0%,   /* Ujung lancip atas */
+    65% 20%,  /* Lekukan kanan atas */
+    85% 40%,  /* Sisi kanan tengah */
+    100% 70%, /* Bagian bawah kanan yang membulat */
+    85% 95%,  /* Dasar kanan */
+    50% 100%, /* Dasar paling bawah */
+    15% 95%,  /* Dasar kiri */
+    0% 70%,   /* Bagian bawah kiri yang membulat */
+    15% 40%,  /* Sisi kiri tengah */
+    35% 20%   /* Lekukan kiri atas */
+  );
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+}
 
     .header-logo .hl {
-      color: var(--cyan);
+      color: whitesmoke;
+      Font-size: 16px;
     }
 
     .header-nav {
@@ -1417,8 +1432,9 @@
     <!-- HEADER -->
     <header>
       <div class="header-logo">
-        <div class="logo-hex">🔥</div>
+        <div class="logo-hex"></div>
         <!-- S<span class="hl">E a</span>M -->
+        <span class="hl">S E a M</span>
       </div>
       <nav class="header-nav">
         <button class="nav-tab active" data-page="dashboard">DASHBOARD</button>
@@ -2042,8 +2058,7 @@
         document.querySelectorAll('.ftab').forEach(b => b.classList.remove('active'))
         btn.classList.add('active')
         S.floor = parseInt(btn.dataset.floor)
-        const mapImg = q('map-floor-1')
-        if (mapImg) mapImg.src = S.floor === 1 ? 'Lantai1.png' : 'Lantai2.png'
+        updateGauges()
       })
     })
 
@@ -2148,14 +2163,33 @@
     }
 
     // ✅ TAMBAHAN BARU: Ganti gambar lantai sesuai status api
-    const mapImg = q('map-floor-1')
-    if (mapImg) {
-      if (S.floor === 1) {
-        mapImg.src = fireBawah ? 'fire.jpg' : 'Lantai1.jpg'
-      } else {
-        mapImg.src = fireAtas ? 'fire.jpg' : 'Lantai2.jpg'
-      }
+   // Update gambar peta sesuai kondisi api per sensor
+const mapImg = q('map-floor-1')
+if (mapImg) {
+  if (S.floor === 1) {
+    // LT 1: api kanan → tampil lampukiri.png | api kiri → tampil lampukanan.png | aman → Lantai1.png
+    if (S.fb.api_kanan && S.fb.api_kiri) {
+      mapImg.src = 'lampukiri.png'       // keduanya aktif → prioritas kanan
+    } else if (S.fb.api_kanan) {
+      mapImg.src = 'lampukiri.png'       // sensor kanan aktif
+    } else if (S.fb.api_kiri) {
+      mapImg.src = 'lampukanan.png'      // sensor kiri aktif
+    } else {
+      mapImg.src = 'Lantai1.png'         // semua aman
     }
+  } else {
+    // LT 2: api kanan → tampil apikanan.png | api kiri → tampil apikiri.png | aman → Lantai2.png
+    if (S.fb.api_kanan && S.fb.api_kiri) {
+      mapImg.src = 'apikanan.png'        // keduanya aktif → prioritas kanan
+    } else if (S.fb.api_kanan) {
+      mapImg.src = 'apikanan.png'        // sensor kanan aktif
+    } else if (S.fb.api_kiri) {
+      mapImg.src = 'apikiri.png'         // sensor kiri aktif
+    } else {
+      mapImg.src = 'Lantai2.png'         // semua aman
+    }
+  }
+}
   </script>
 </body>
 
