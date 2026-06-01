@@ -5,13 +5,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FireGuard Pro</title>
- <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css">
   <!-- ══════════════════════════════════════
        FIREBASE SDK v9 (compat mode)
        ══════════════════════════════════════ -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
- 
+
   <link
     href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Inter:wght@300;400;500;600&family=Poppins:wght@400;500&display=swap"
     rel="stylesheet">
@@ -1375,7 +1375,7 @@
             <div class="mt-track"></div>
             <div class="mt-thumb"></div>
           </label>
-          <span class="esp-label" id="esp-lbl" >ESP32:ON</span>
+          <span class="esp-label" id="esp-lbl">ESP32:ON</span>
         </div>
       </div>
     </header>
@@ -2063,21 +2063,21 @@
       init()
     })
     // ✅ TAMBAHAN BARU: Ubah warna glow kartu secara dinamis
-const fireCard = document.querySelector('.gauge-card.fire-card')
-if (fireCard) {
-  fireCard.style.setProperty('--gc', fc)
-  fireCard.classList.toggle('fire-active', fireAny)
-}
+    const fireCard = document.querySelector('.gauge-card.fire-card')
+    if (fireCard) {
+      fireCard.style.setProperty('--gc', fc)
+      fireCard.classList.toggle('fire-active', fireAny)
+    }
 
-// ✅ TAMBAHAN BARU: Ganti gambar lantai sesuai status api
-const mapImg = q('map-floor-1')
-if (mapImg) {
-  if (S.floor === 1) {
-    mapImg.src = fireBawah ? 'fire.jpg' : 'Lantai1.jpg'
-  } else {
-    mapImg.src = fireAtas ? 'fire.jpg' : 'Lantai2.jpg'
-  }
-}
+    // ✅ TAMBAHAN BARU: Ganti gambar lantai sesuai status api
+    const mapImg = q('map-floor-1')
+    if (mapImg) {
+      if (S.floor === 1) {
+        mapImg.src = fireBawah ? 'fire.jpg' : 'Lantai1.jpg'
+      } else {
+        mapImg.src = fireAtas ? 'fire.jpg' : 'Lantai2.jpg'
+      }
+    }
   </script>
 </body>
 
