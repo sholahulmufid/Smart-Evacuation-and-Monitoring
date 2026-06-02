@@ -1547,6 +1547,7 @@
         warn: S.log.filter(a => a.level === 'warning').length,
         ok: S.log.filter(a => a.level === 'info' || a.level === 'success').length,
       }
+      
       c.innerHTML = [
         { l: 'TOTAL LOG', v: counts.total, hc: '#94a3b8' },
         { l: 'BAHAYA', v: counts.danger, hc: '#ff0057' },
