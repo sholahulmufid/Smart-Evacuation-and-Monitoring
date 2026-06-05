@@ -2381,7 +2381,7 @@
 Tugasmu menjawab pertanyaan operator berdasarkan data sensor realtime berikut:
 ${getKonteksSensor()}
 Jawab dalam Bahasa Indonesia. Singkat, jelas, maksimal 3 kalimat.
-Jika ada bahaya, tegaskan dengan jelas. Gunakan nada profesional.`
+Jika ada bahaya, tegaskan dengan jelas, dan langsung kirim pesan secara otomatisketika terdeteksi bahaya. Gunakan nada profesional.`
               },
               // Lalu seluruh history percakapan
               ...chatHistory
@@ -2444,9 +2444,30 @@ Jika ada bahaya, tegaskan dengan jelas. Gunakan nada profesional.`
       initFirebase()
       pushLog('info', 'FireGuard PRO v2.0 aktif — menunggu data ESP32', 'System')
     }
+    //tambahan
+    // T3: waktu dari Firebase push sampai listener terpanggil
+    // Firebase menyertakan serverTimestamp di data, kita bandingkan dengan Date.now()
+    onValue(ref(db, 'fireguard/sensor'), (snapshot) => {
+      const t3_receive = Date.now();             // waktu listener dipanggil
 
-window.addEventListener('load', () => {
-    init()
+      const data = snapshot.val();
+      const serverTs = data.timestamp;           // millis() dari ESP32
+      const t3_latency = t3_receive - serverTs;  // T3 + clock drift ESP32 vs server
+
+      // T4: waktu render DOM
+      const t4_start = performance.now();
+      updateUI(data);                            // fungsi update semua elemen UI
+      const t4_render = performance.now() - t4_start;  // biasanya 5–30 ms
+
+      console.log(`[LATENCY] Firebase→Browser: ${t3_latency}ms | Render: ${t4_render.toFixed(1)}ms`);
+
+      // Tampilkan di dashboard (opsional, bagus untuk demo paper)
+      document.getElementById('latency-display').textContent =
+        `Latency: ${t3_latency} ms`;
+    });
+
+    window.addEventListener('load', () => {
+      init()
 
     })
   </script>
