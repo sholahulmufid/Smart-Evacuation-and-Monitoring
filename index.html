@@ -2261,9 +2261,10 @@
     })
 
     // ── KONFIGURASI AI GEMINI ──────────────────────────────────
-    const GEMINI_API_KEY = 'AQ.Ab8RN6KgtTiXd1mA-ohlxmAUXlnGyb2-WIRG0z98yOhPM3rBkw'
+    const GEMINI_API_KEY = 'AQ.Ab8RN6IphVflp8Uojreaq4n8MWQzCG_drxfsOrjs2rg-uTnVpg'
 
     let chatOpen = true
+    let chatHistory = []  // ← INI YANG BARU: simpan riwayat percakapan
 
     function toggleChat() {
       chatOpen = !chatOpen
@@ -2275,10 +2276,8 @@
       btn.textContent = chatOpen ? '▾ TUTUP' : '▸ BUKA'
     }
 
-    function getBotResponses() {
-      // Ambil snapshot data realtime dari objek S yang sudah ada
-      return `
-Data sensor FireGuard saat ini (realtime dari Firebase):
+    function getKonteksSensor() {
+      return `Data sensor FireGuard saat ini (realtime dari Firebase):
 - Suhu: ${S.fb.suhu !== null ? S.fb.suhu.toFixed(1) + '°C' : 'tidak terbaca'}
 - Kelembaban: ${S.fb.kelembaban !== null ? S.fb.kelembaban.toFixed(1) + '%' : 'tidak terbaca'}
 - Sensor API Kanan: ${S.fb.api_kanan ? 'AKTIF — API TERDETEKSI' : 'aman'}
@@ -2287,9 +2286,7 @@ Data sensor FireGuard saat ini (realtime dari Firebase):
 - Mode sistem: ${S.mode === 'auto' ? 'otomatis' : 'manual'}
 - Total log: ${S.log.length} entri
 - Jumlah log BAHAYA: ${S.log.filter(a => a.level === 'danger').length}
-- Jumlah log WASPADA: ${S.log.filter(a => a.level === 'warning').length}
-- Log terbaru: ${S.log.length > 0 ? S.log[S.log.length - 1].msg : 'belum ada log'}
-`
+- Log terbaru: ${S.log.length > 0 ? S.log[S.log.length - 1].msg : 'belum ada log'}`
     }
 
     function tambahPesan(teks, tipe) {
@@ -2307,43 +2304,38 @@ Data sensor FireGuard saat ini (realtime dari Firebase):
       const pertanyaan = input.value.trim()
       if (!pertanyaan) return
 
-      // Tampilkan pesan user
       tambahPesan(pertanyaan, 'user')
       input.value = ''
 
-      // Tampilkan indikator loading
+      // Simpan pesan user ke history
+      chatHistory.push({
+        role: 'user',
+        parts: [{ text: pertanyaan }]
+      })
+
       const loadingEl = tambahPesan('⬡ sedang memproses...', 'bot ai-msg--loading')
 
       try {
-        // 1. Siapkan System Prompt (Instruksi Utama)
-        const systemPrompt = `Kamu adalah asisten AI sistem deteksi kebakaran bernama FireGuard Pro. 
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`
+
+        // System prompt selalu sertakan data sensor TERBARU
+        const systemPrompt = `Kamu adalah asisten AI sistem deteksi kebakaran bernama FireGuard Pro.
 Tugasmu menjawab pertanyaan operator berdasarkan data sensor realtime berikut:
-${getBotResponses()}
-Jawab dalam Bahasa Indonesia. Singkat, jelas, dan to the point (maksimal 3 kalimat).
+${getKonteksSensor()}
+Jawab dalam Bahasa Indonesia. Singkat, jelas, to the point (maksimal 3 kalimat).
 Jika ada bahaya, tegaskan dengan jelas. Gunakan nada profesional.`
 
-        // 2. Tentukan Endpoint URL Gemini (menggunakan model 1.5-flash untuk kecepatan realtime)
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${GEMINI_API_KEY}`
-
-        // 3. Kirim Request ke Gemini API
         const response = await fetch(url, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             systemInstruction: {
               parts: [{ text: systemPrompt }]
             },
-            contents: [
-              {
-                role: "user",
-                parts: [{ text: pertanyaan }]
-              }
-            ],
+            contents: chatHistory,  // ← Kirim SELURUH history, bukan hanya 1 pesan
             generationConfig: {
               maxOutputTokens: 300,
-              temperature: 0.3 // Opsional: Dibuat rendah agar jawaban sensor lebih faktual
+              temperature: 0.3
             }
           })
         })
@@ -2351,27 +2343,36 @@ Jika ada bahaya, tegaskan dengan jelas. Gunakan nada profesional.`
         const data = await response.json()
         loadingEl.remove()
 
-        // 4. Ekstrak Respons dari Gemini
-        if (data.candidates && data.candidates.length > 0) {
+        if (data.candidates && data.candidates[0]) {
           const aiResponse = data.candidates[0].content.parts[0].text
-          tambahPesan(aiResponse, 'bot')
 
-          // Asumsi fungsi pushLog sudah didefinisikan di kode Anda sebelumnya
-          if (typeof pushLog === 'function') {
-            pushLog('info', `AI Query: "${pertanyaan.substring(0, 40)}..."`, 'AI Assistant')
+          // Simpan jawaban AI ke history juga
+          chatHistory.push({
+            role: 'model',
+            parts: [{ text: aiResponse }]
+          })
+
+          // Batasi history maksimal 10 pesan agar tidak terlalu besar
+          if (chatHistory.length > 10) {
+            chatHistory = chatHistory.slice(-10)
           }
+
+          tambahPesan(aiResponse, 'bot')
+          pushLog('info', `AI Query: "${pertanyaan.substring(0, 40)}..."`, 'AI Assistant')
+
         } else if (data.error) {
-          // Jika Google mengirimkan error, tampilkan alasannya di chat
-          console.error("Gemini API Error:", data.error.message)
-          tambahPesan(`Error dari server Google: ${data.error.message}`, 'bot')
+          tambahPesan(`Error: ${data.error.message}`, 'bot')
+          // Hapus pesan user dari history kalau gagal
+          chatHistory.pop()
         } else {
-          console.error("Format respons tidak dikenal:", data)
-          tambahPesan('Gagal mendapat respons. Format data tidak sesuai.', 'bot')
+          tambahPesan('Gagal mendapat respons dari AI.', 'bot')
+          chatHistory.pop()
         }
 
       } catch (err) {
         loadingEl.remove()
         tambahPesan('Koneksi ke AI gagal: ' + err.message, 'bot')
+        chatHistory.pop()
       }
     }
 
