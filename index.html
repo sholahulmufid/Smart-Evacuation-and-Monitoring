@@ -1891,6 +1891,10 @@
         })
 
         pushLog('success', 'Firebase Realtime Database terhubung', 'System')
+//memory
+pushLog('success', 'Firebase Realtime Database terhubung', 'System')
+loadLogsHariIni()  // ← TAMBAHKAN INI
+
       } catch (err) {
         console.error('Firebase error:', err)
         pushLog('warning', 'Gagal inisialisasi Firebase: ' + err.message, 'System')
@@ -1911,9 +1915,23 @@
     function sLabel(s) {
       return s === 'danger' ? 'BAHAYA' : s === 'warning' ? 'WASPADA' : 'AMAN'
     }
+
+    //memory
     function pushLog(level, msg, room) {
+      // Tetap simpan di memori lokal seperti biasa
       S.log.push({ level, msg, room, time: new Date() })
       renderFeed(); renderHistStats(); updateTicker()
+
+      // TAMBAHAN: simpan juga ke Firebase
+      if (typeof fbDb !== 'undefined' && fbDb) {
+        const today = new Date().toISOString().slice(0, 10) // "2026-06-05"
+        fbDb.ref(`fireguard/logs/${today}`).push({
+          level,
+          msg,
+          room,
+          time: new Date().toISOString()
+        })
+      }
     }
 
     function polar(cx, cy, r, deg) {
@@ -2405,6 +2423,37 @@ Jika ada bahaya, tegaskan dengan jelas. Gunakan nada profesional.`
     }
 
     window.addEventListener('load', () => {
+//memory
+      function loadLogsHariIni() {
+        const today = new Date().toISOString().slice(0, 10) // "2026-06-05"
+
+        fbDb.ref(`fireguard/logs/${today}`).on('value', snapshot => {
+          const data = snapshot.val()
+          if (!data) return
+
+          // Konversi dari objek Firebase ke array
+          const logsFirebase = Object.values(data).map(item => ({
+            level: item.level,
+            msg: item.msg,
+            room: item.room,
+            time: new Date(item.time)
+          }))
+
+          // Urutkan dari yang terlama ke terbaru
+          logsFirebase.sort((a, b) => a.time - b.time)
+
+          // Ganti log lokal dengan data dari Firebase
+          S.log = logsFirebase
+
+          // Update semua tampilan
+          renderFeed()
+          renderHistStats()
+          renderHistTable()
+          updateTicker()
+          updateStats()
+        })
+      }
+
       init()
     })
   </script>
