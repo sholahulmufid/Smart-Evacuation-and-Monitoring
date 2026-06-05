@@ -1836,6 +1836,29 @@
 
     let _prevFireState = false
 
+    //memory
+    function loadLogsHariIni() {
+      const today = new Date().toISOString().slice(0, 10)
+      fbDb.ref(`fireguard/logs/${today}`).on('value', snapshot => {
+        const data = snapshot.val()
+        S.log = data
+          ? Object.values(data)
+            .map(item => ({
+              level: item.level,
+              msg: item.msg,
+              room: item.room,
+              time: new Date(item.time)
+            }))
+            .sort((a, b) => a.time - b.time)
+          : []
+        renderFeed()
+        renderHistStats()
+        renderHistTable()
+        updateTicker()
+        updateStats()
+      })
+    }
+
     function initFirebase() {
       try {
         fbApp = firebase.initializeApp(FIREBASE_CONFIG)
@@ -1891,9 +1914,9 @@
         })
 
         pushLog('success', 'Firebase Realtime Database terhubung', 'System')
-//memory
-pushLog('success', 'Firebase Realtime Database terhubung', 'System')
-loadLogsHariIni()  // ← TAMBAHKAN INI
+        //memory
+        loadLogsHariIni()   // Muat log hari ini dari Firebase (scope sudah benar)
+        pushLog('success', 'Firebase Realtime Database terhubung', 'System')
 
       } catch (err) {
         console.error('Firebase error:', err)
@@ -1918,19 +1941,19 @@ loadLogsHariIni()  // ← TAMBAHKAN INI
 
     //memory
     function pushLog(level, msg, room) {
-      // Tetap simpan di memori lokal seperti biasa
-      S.log.push({ level, msg, room, time: new Date() })
-      renderFeed(); renderHistStats(); updateTicker()
-
-      // TAMBAHAN: simpan juga ke Firebase
+      // Hanya tulis ke Firebase — listener loadLogsHariIni yang update S.log
       if (typeof fbDb !== 'undefined' && fbDb) {
-        const today = new Date().toISOString().slice(0, 10) // "2026-06-05"
+        const today = new Date().toISOString().slice(0, 10)
         fbDb.ref(`fireguard/logs/${today}`).push({
           level,
           msg,
           room,
           time: new Date().toISOString()
         })
+      } else {
+        // Fallback: Firebase belum siap, simpan lokal saja
+        S.log.push({ level, msg, room, time: new Date() })
+        renderFeed(); renderHistStats(); updateTicker()
       }
     }
 
@@ -2422,39 +2445,9 @@ Jika ada bahaya, tegaskan dengan jelas. Gunakan nada profesional.`
       pushLog('info', 'FireGuard PRO v2.0 aktif — menunggu data ESP32', 'System')
     }
 
-    window.addEventListener('load', () => {
-//memory
-      function loadLogsHariIni() {
-        const today = new Date().toISOString().slice(0, 10) // "2026-06-05"
+window.addEventListener('load', () => {
+    init()
 
-        fbDb.ref(`fireguard/logs/${today}`).on('value', snapshot => {
-          const data = snapshot.val()
-          if (!data) return
-
-          // Konversi dari objek Firebase ke array
-          const logsFirebase = Object.values(data).map(item => ({
-            level: item.level,
-            msg: item.msg,
-            room: item.room,
-            time: new Date(item.time)
-          }))
-
-          // Urutkan dari yang terlama ke terbaru
-          logsFirebase.sort((a, b) => a.time - b.time)
-
-          // Ganti log lokal dengan data dari Firebase
-          S.log = logsFirebase
-
-          // Update semua tampilan
-          renderFeed()
-          renderHistStats()
-          renderHistTable()
-          updateTicker()
-          updateStats()
-        })
-      }
-
-      init()
     })
   </script>
 </body>
