@@ -97,8 +97,15 @@
     }
 
     @keyframes gridBreath {
-      0%, 100% { opacity: .35 }
-      50% { opacity: .15 }
+
+      0%,
+      100% {
+        opacity: .35
+      }
+
+      50% {
+        opacity: .15
+      }
     }
 
     .scanlines {
@@ -111,8 +118,13 @@
     }
 
     @keyframes scanDrift {
-      from { background-position: 0 0 }
-      to { background-position: 0 200px }
+      from {
+        background-position: 0 0
+      }
+
+      to {
+        background-position: 0 200px
+      }
     }
 
     /* ━━━━━━━━━━━━ CORNER BRACKETS ━━━━━━━━━━━━ */
@@ -120,16 +132,37 @@
       position: relative;
     }
 
-    .b-tl, .b-tr, .b-bl, .b-br {
+    .b-tl,
+    .b-tr,
+    .b-bl,
+    .b-br {
       position: absolute;
     }
 
-    .b-tl { top: 0; left: 0; }
-    .b-tr { top: 0; right: 0; }
-    .b-bl { bottom: 0; left: 0; }
-    .b-br { bottom: 0; right: 0; }
+    .b-tl {
+      top: 0;
+      left: 0;
+    }
 
-    .b-tl::before, .b-tr::before, .b-bl::before, .b-br::before {
+    .b-tr {
+      top: 0;
+      right: 0;
+    }
+
+    .b-bl {
+      bottom: 0;
+      left: 0;
+    }
+
+    .b-br {
+      bottom: 0;
+      right: 0;
+    }
+
+    .b-tl::before,
+    .b-tr::before,
+    .b-bl::before,
+    .b-br::before {
       content: '';
       position: absolute;
       width: 14px;
@@ -138,10 +171,33 @@
       opacity: .7;
     }
 
-    .b-tl::before { top: 0; left: 0; border-right: none; border-bottom: none; }
-    .b-tr::before { top: 0; right: 0; border-left: none; border-bottom: none; }
-    .b-bl::before { bottom: 0; left: 0; border-right: none; border-top: none; }
-    .b-br::before { bottom: 0; right: 0; border-left: none; border-top: none; }
+    .b-tl::before {
+      top: 0;
+      left: 0;
+      border-right: none;
+      border-bottom: none;
+    }
+
+    .b-tr::before {
+      top: 0;
+      right: 0;
+      border-left: none;
+      border-bottom: none;
+    }
+
+    .b-bl::before {
+      bottom: 0;
+      left: 0;
+      border-right: none;
+      border-top: none;
+    }
+
+    .b-br::before {
+      bottom: 0;
+      right: 0;
+      border-left: none;
+      border-top: none;
+    }
 
     /* ━━━━━━━━━━━━ MAIN LAYOUT ━━━━━━━━━━━━ */
     #app {
@@ -243,9 +299,17 @@
       transition: transform .25s;
     }
 
-    .nav-tab:hover { color: var(--text); }
-    .nav-tab.active { color: var(--cyan); }
-    .nav-tab.active::before { transform: scaleX(1); }
+    .nav-tab:hover {
+      color: var(--text);
+    }
+
+    .nav-tab.active {
+      color: var(--cyan);
+    }
+
+    .nav-tab.active::before {
+      transform: scaleX(1);
+    }
 
     .nav-tab.active::after {
       content: '';
@@ -288,8 +352,17 @@
     }
 
     @keyframes liveBlink {
-      0%, 100% { opacity: 1; box-shadow: 0 0 5px var(--green); }
-      50% { opacity: .2; box-shadow: none; }
+
+      0%,
+      100% {
+        opacity: 1;
+        box-shadow: 0 0 5px var(--green);
+      }
+
+      50% {
+        opacity: .2;
+        box-shadow: none;
+      }
     }
 
     .uptime-badge {
@@ -299,7 +372,9 @@
       letter-spacing: 1px;
     }
 
-    .uptime-badge span { color: var(--cyan); }
+    .uptime-badge span {
+      color: var(--cyan);
+    }
 
     .fb-status {
       font-family: var(--f-mono);
@@ -419,15 +494,34 @@
     }
 
     @keyframes tickScroll {
-      from { transform: translateX(100vw) }
-      to { transform: translateX(-100%) }
+      from {
+        transform: translateX(100vw)
+      }
+
+      to {
+        transform: translateX(-100%)
+      }
     }
 
-    .ti { margin-right: 64px; }
-    .ti.ok { color: var(--green); }
-    .ti.warn { color: var(--yellow); }
-    .ti.danger { color: var(--pink); }
-    .ti.default { color: var(--muted); }
+    .ti {
+      margin-right: 64px;
+    }
+
+    .ti.ok {
+      color: var(--green);
+    }
+
+    .ti.warn {
+      color: var(--yellow);
+    }
+
+    .ti.danger {
+      color: var(--pink);
+    }
+
+    .ti.default {
+      color: var(--muted);
+    }
 
     /* ━━━━━━━━━━━━ CONTENT ━━━━━━━━━━━━ */
     .content-area {
@@ -437,8 +531,13 @@
       padding: 14px 18px 20px;
     }
 
-    .page { display: none; }
-    .page.active { display: block; }
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
 
     /* ━━━━━━━━━━━━ DANGER BANNER ━━━━━━━━━━━━ */
     .danger-banner {
@@ -456,11 +555,20 @@
       animation: bannerPulse .8s infinite;
     }
 
-    .danger-banner.show { display: flex; }
+    .danger-banner.show {
+      display: flex;
+    }
 
     @keyframes bannerPulse {
-      0%, 100% { border-left-color: var(--pink) }
-      50% { border-left-color: transparent }
+
+      0%,
+      100% {
+        border-left-color: var(--pink)
+      }
+
+      50% {
+        border-left-color: transparent
+      }
     }
 
     /* ━━━━━━━━━━━━ STAT CARDS ━━━━━━━━━━━━ */
@@ -580,7 +688,9 @@
       margin-bottom: 12px;
     }
 
-    .gauge-wrap { position: relative; }
+    .gauge-wrap {
+      position: relative;
+    }
 
     .gauge-center {
       position: absolute;
@@ -635,8 +745,15 @@
     }
 
     @keyframes fireRingPulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: .3; }
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: .3;
+      }
     }
 
     /* ━━━━━━━━━━━━ BOTTOM ROW ━━━━━━━━━━━━ */
@@ -668,7 +785,10 @@
       letter-spacing: 3px;
     }
 
-    .floor-tabs { display: flex; gap: 4px; }
+    .floor-tabs {
+      display: flex;
+      gap: 4px;
+    }
 
     .ftab {
       padding: 3px 10px;
@@ -758,13 +878,35 @@
     }
 
     @keyframes slideIn {
-      from { opacity: 0; transform: translateX(-8px) }
-      to { opacity: 1; transform: none }
+      from {
+        opacity: 0;
+        transform: translateX(-8px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
     }
 
-    .fi-body { flex: 1; min-width: 0; }
-    .fi-msg { font-family: var(--f-mono); font-size: 11px; color: var(--text); line-height: 1.35; }
-    .fi-meta { font-family: var(--f-mono); font-size: 9px; color: var(--muted); margin-top: 2px; }
+    .fi-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .fi-msg {
+      font-family: var(--f-mono);
+      font-size: 11px;
+      color: var(--text);
+      line-height: 1.35;
+    }
+
+    .fi-meta {
+      font-family: var(--f-mono);
+      font-size: 9px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
 
     .fi-badge {
       font-family: var(--f-mono);
@@ -776,6 +918,137 @@
       flex-shrink: 0;
       color: var(--fi-c, var(--cyan));
       background: var(--fi-bg, #00e5ff08);
+    }
+
+    /* ── AI CHAT PANEL ─────────────────────────── */
+    .ai-chat-panel {
+      background: var(--bg1);
+      border: 1px solid var(--dim);
+      border-radius: 15px;
+      margin-top: 10px;
+      overflow: hidden;
+    }
+
+    .ai-chat-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      background: var(--bg0);
+      border-bottom: 1px solid var(--dim);
+    }
+
+    .ai-label {
+      font-family: var(--f-mono);
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: var(--purple);
+    }
+
+    .ai-model-tag {
+      font-family: var(--f-mono);
+      font-size: 9px;
+      padding: 2px 8px;
+      border: 1px solid #a855f730;
+      color: #a855f7;
+      background: #a855f710;
+      letter-spacing: 1px;
+    }
+
+    .ai-toggle-btn {
+      margin-left: auto;
+      background: transparent;
+      border: 1px solid var(--dim);
+      color: var(--muted);
+      font-family: var(--f-mono);
+      font-size: 9px;
+      padding: 3px 10px;
+      cursor: pointer;
+      letter-spacing: 1px;
+    }
+
+    .ai-messages {
+      padding: 12px 16px;
+      max-height: 220px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .ai-msg {
+      padding: 8px 12px;
+      font-family: var(--f-mono);
+      font-size: 11px;
+      line-height: 1.5;
+      max-width: 88%;
+      border-radius: 8px;
+    }
+
+    .ai-msg--bot {
+      background: #a855f712;
+      border-left: 2px solid var(--purple);
+      color: var(--text);
+      align-self: flex-start;
+    }
+
+    .ai-msg--user {
+      background: #00e5ff10;
+      border-right: 2px solid var(--cyan);
+      color: var(--text);
+      align-self: flex-end;
+      text-align: right;
+    }
+
+    .ai-msg--loading {
+      color: var(--muted);
+      font-style: italic;
+      animation: liveBlink 1s infinite;
+    }
+
+    .ai-input-row {
+      display: flex;
+      gap: 8px;
+      padding: 10px 16px;
+      border-top: 1px solid var(--dim);
+    }
+
+    .ai-input {
+      flex: 1;
+      padding: 8px 12px;
+      background: var(--bg0);
+      border: 1px solid var(--dim);
+      color: var(--text);
+      font-family: var(--f-mono);
+      font-size: 11px;
+      outline: none;
+      border-radius: 6px;
+    }
+
+    .ai-input:focus {
+      border-color: var(--purple);
+    }
+
+    .ai-input::placeholder {
+      color: var(--muted);
+    }
+
+    .ai-send-btn {
+      padding: 8px 18px;
+      background: #a855f715;
+      border: 1px solid #a855f740;
+      color: var(--purple);
+      font-family: var(--f-mono);
+      font-size: 10px;
+      letter-spacing: 2px;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all .15s;
+    }
+
+    .ai-send-btn:hover {
+      background: #a855f725;
+      border-color: var(--purple);
     }
 
     /* ━━━━━━━━━━━━ CONTROL PANEL ━━━━━━━━━━━━ */
@@ -809,12 +1082,26 @@
       box-shadow: 0 0 10px color-mix(in srgb, var(--cb, var(--cyan)) 25%, transparent);
     }
 
-    .ctrl-btn.em-btn { --cb: var(--pink); }
-    .ctrl-btn.em-btn.armed { animation: armPulse .7s infinite; }
+    .ctrl-btn.em-btn {
+      --cb: var(--pink);
+    }
+
+    .ctrl-btn.em-btn.armed {
+      animation: armPulse .7s infinite;
+    }
 
     @keyframes armPulse {
-      0%, 100% { border-color: var(--pink); box-shadow: var(--glow-p) }
-      50% { border-color: transparent; box-shadow: none }
+
+      0%,
+      100% {
+        border-color: var(--pink);
+        box-shadow: var(--glow-p)
+      }
+
+      50% {
+        border-color: transparent;
+        box-shadow: none
+      }
     }
 
     .mode-pill {
@@ -828,7 +1115,12 @@
     }
 
     /* ━━━━━━━━━━━━ HISTORY ━━━━━━━━━━━━ */
-    .hist-stats { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+    .hist-stats {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
 
     .hs-card {
       padding: 10px 16px;
@@ -839,10 +1131,27 @@
       gap: 3px;
     }
 
-    .hs-val { font-family: var(--f-head); font-size: 20px; font-weight: 700; color: var(--hc, var(--cyan)); }
-    .hs-lbl { font-family: var(--f-mono); font-size: 8px; color: var(--muted); letter-spacing: 2px; }
+    .hs-val {
+      font-family: var(--f-head);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--hc, var(--cyan));
+    }
 
-    .filter-row { display: flex; gap: 8px; margin-bottom: 10px; align-items: center; flex-wrap: wrap; }
+    .hs-lbl {
+      font-family: var(--f-mono);
+      font-size: 8px;
+      color: var(--muted);
+      letter-spacing: 2px;
+    }
+
+    .filter-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
 
     .fi-search {
       flex: 1;
@@ -856,8 +1165,13 @@
       outline: none;
     }
 
-    .fi-search:focus { border-color: var(--cyan); }
-    .fi-search::placeholder { color: var(--muted); }
+    .fi-search:focus {
+      border-color: var(--cyan);
+    }
+
+    .fi-search::placeholder {
+      color: var(--muted);
+    }
 
     .fbtn {
       padding: 7px 12px;
@@ -870,7 +1184,11 @@
       transition: all .15s;
     }
 
-    .fbtn.active { border-color: var(--cyan); color: var(--cyan); background: #00e5ff10; }
+    .fbtn.active {
+      border-color: var(--cyan);
+      color: var(--cyan);
+      background: #00e5ff10;
+    }
 
     .exp-btn {
       padding: 7px 14px;
@@ -884,10 +1202,22 @@
       transition: all .15s;
     }
 
-    .exp-btn:hover { background: #00ff8714; box-shadow: var(--glow-g); }
+    .exp-btn:hover {
+      background: #00ff8714;
+      box-shadow: var(--glow-g);
+    }
 
-    .hist-wrap { background: var(--bg1); border: 1px solid var(--dim); overflow: auto; max-height: calc(100vh - 300px); }
-    .hist-tbl { width: 100%; border-collapse: collapse; }
+    .hist-wrap {
+      background: var(--bg1);
+      border: 1px solid var(--dim);
+      overflow: auto;
+      max-height: calc(100vh - 300px);
+    }
+
+    .hist-tbl {
+      width: 100%;
+      border-collapse: collapse;
+    }
 
     .hist-tbl th {
       padding: 10px 14px;
@@ -911,14 +1241,36 @@
       transition: background .1s;
     }
 
-    .hist-tbl tr:hover td { background: var(--bg1); }
-    .hist-tbl td:first-child { color: var(--muted); }
+    .hist-tbl tr:hover td {
+      background: var(--bg1);
+    }
+
+    .hist-tbl td:first-child {
+      color: var(--muted);
+    }
 
     /* ━━━━━━━━━━━━ SETTINGS ━━━━━━━━━━━━ */
-    .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .settings-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
 
-    .sc { background: var(--bg1); padding: 20px; border: 1px solid var(--dim); position: relative; }
-    .sc::before { content: ''; position: absolute; top: 0; right: 0; border-top: 30px solid #00e5ff08; border-left: 30px solid transparent; }
+    .sc {
+      background: var(--bg1);
+      padding: 20px;
+      border: 1px solid var(--dim);
+      position: relative;
+    }
+
+    .sc::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      border-top: 30px solid #00e5ff08;
+      border-left: 30px solid transparent;
+    }
 
     .sc-hdr {
       font-family: var(--f-mono);
@@ -934,17 +1286,64 @@
       gap: 8px;
     }
 
-    .sc-hdr::before { content: '//'; color: var(--dim); }
-    .tg { margin-bottom: 18px; }
-    .tg-lbl { font-family: var(--f-mono); font-size: 9px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
-    .tg-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .sc-hdr::before {
+      content: '//';
+      color: var(--dim);
+    }
 
-    .ti label { display: flex; justify-content: space-between; align-items: center; font-family: var(--f-mono); font-size: 9px; margin-bottom: 7px; }
-    .ti label .lc { color: var(--tc, var(--yellow)); }
-    .ti label .rv { color: var(--text); font-weight: 700; }
+    .tg {
+      margin-bottom: 18px;
+    }
 
-    input[type=range] { width: 100%; height: 2px; background: var(--dim); outline: none; cursor: pointer; }
-    input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 13px; height: 13px; background: var(--tc, var(--cyan)); clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); cursor: pointer; }
+    .tg-lbl {
+      font-family: var(--f-mono);
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .tg-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .ti label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--f-mono);
+      font-size: 9px;
+      margin-bottom: 7px;
+    }
+
+    .ti label .lc {
+      color: var(--tc, var(--yellow));
+    }
+
+    .ti label .rv {
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    input[type=range] {
+      width: 100%;
+      height: 2px;
+      background: var(--dim);
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 13px;
+      height: 13px;
+      background: var(--tc, var(--cyan));
+      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+      cursor: pointer;
+    }
 
     .sv-btn {
       margin-top: 6px;
@@ -959,40 +1358,170 @@
       clip-path: polygon(0 5px, 5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%);
     }
 
-    .sv-btn:hover { background: var(--cyan); color: var(--bg0); box-shadow: var(--glow-c); }
+    .sv-btn:hover {
+      background: var(--cyan);
+      color: var(--bg0);
+      box-shadow: var(--glow-c);
+    }
 
-    .ni { display: flex; justify-content: space-between; align-items: center; padding: 11px 0; border-bottom: 1px solid var(--bg0); }
-    .ni-lbl { display: flex; align-items: center; gap: 9px; font-family: var(--f-mono); font-size: 11px; color: var(--text); }
-    .ni-icon { font-size: 14px; }
+    .ni {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 11px 0;
+      border-bottom: 1px solid var(--bg0);
+    }
 
-    .ntgl { position: relative; width: 44px; height: 22px; cursor: pointer; }
-    .ntgl input { opacity: 0; width: 0; height: 0; position: absolute; }
-    .ntgl-track { position: absolute; inset: 0; background: var(--bg0); border: 1px solid var(--dim); transition: all .2s; }
-    .ntgl-thumb { position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; background: var(--muted); clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); transition: all .2s; }
+    .ni-lbl {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-family: var(--f-mono);
+      font-size: 11px;
+      color: var(--text);
+    }
 
-    .ntgl.on .ntgl-track { border-color: var(--cyan); background: #00e5ff14; }
-    .ntgl.on .ntgl-thumb { left: 25px; background: var(--cyan); box-shadow: 0 0 7px var(--cyan); }
+    .ni-icon {
+      font-size: 14px;
+    }
 
-    .ci { margin-bottom: 13px; }
-    .ci label { display: block; font-family: var(--f-mono); font-size: 9px; color: var(--muted); letter-spacing: 2px; margin-bottom: 6px; }
-    .ci input { width: 100%; padding: 9px 12px; background: var(--bg0); border: 1px solid var(--dim); color: var(--text); font-family: var(--f-mono); font-size: 11px; outline: none; }
-    .ci input:focus { border-color: var(--cyan); }
+    .ntgl {
+      position: relative;
+      width: 44px;
+      height: 22px;
+      cursor: pointer;
+    }
+
+    .ntgl input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      position: absolute;
+    }
+
+    .ntgl-track {
+      position: absolute;
+      inset: 0;
+      background: var(--bg0);
+      border: 1px solid var(--dim);
+      transition: all .2s;
+    }
+
+    .ntgl-thumb {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 14px;
+      height: 14px;
+      background: var(--muted);
+      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+      transition: all .2s;
+    }
+
+    .ntgl.on .ntgl-track {
+      border-color: var(--cyan);
+      background: #00e5ff14;
+    }
+
+    .ntgl.on .ntgl-thumb {
+      left: 25px;
+      background: var(--cyan);
+      box-shadow: 0 0 7px var(--cyan);
+    }
+
+    .ci {
+      margin-bottom: 13px;
+    }
+
+    .ci label {
+      display: block;
+      font-family: var(--f-mono);
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: 2px;
+      margin-bottom: 6px;
+    }
+
+    .ci input {
+      width: 100%;
+      padding: 9px 12px;
+      background: var(--bg0);
+      border: 1px solid var(--dim);
+      color: var(--text);
+      font-family: var(--f-mono);
+      font-size: 11px;
+      outline: none;
+    }
+
+    .ci input:focus {
+      border-color: var(--cyan);
+    }
 
     /* ━━━━━━━━━━━━ DANGER BODY ━━━━━━━━━━━━ */
-    body.in-danger .grid-bg { animation: gridDanger .6s ease-in-out infinite !important; }
-    @keyframes gridDanger { 0%, 100% { opacity: .3 } 50% { opacity: .06 } }
+    body.in-danger .grid-bg {
+      animation: gridDanger .6s ease-in-out infinite !important;
+    }
+
+    @keyframes gridDanger {
+
+      0%,
+      100% {
+        opacity: .3
+      }
+
+      50% {
+        opacity: .06
+      }
+    }
 
     /* ━━━━━━━━━━━━ MEDIA SCREENS (RESPONSIVE) ━━━━━━━━━━━━ */
     @media (max-width: 768px) {
-      html, body { overflow-y: auto !important; height: auto; }
-      header { height: auto; flex-direction: row; padding: 10px; gap: 8px; }
-      .header-nav { width: 100%; justify-content: center; }
-      .nav-tab { padding: 6px 10px; font-size: 13px; letter-spacing: 1.5px; }
-      .stat-row { grid-template-columns: repeat(2, 1fr) !important; }
-      .sc-val { font-size: 20px !important; }
-      .sc-label { font-size: 10px; letter-spacing: 1px; }
-      .gauge-row { grid-template-columns: 1fr !important; gap: 12px; }
-      .settings-grid { grid-template-columns: 1fr !important; }
+
+      html,
+      body {
+        overflow-y: auto !important;
+        height: auto;
+      }
+
+      header {
+        height: auto;
+        flex-direction: row;
+        padding: 10px;
+        gap: 8px;
+      }
+
+      .header-nav {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .nav-tab {
+        padding: 6px 10px;
+        font-size: 13px;
+        letter-spacing: 1.5px;
+      }
+
+      .stat-row {
+        grid-template-columns: repeat(2, 1fr) !important;
+      }
+
+      .sc-val {
+        font-size: 20px !important;
+      }
+
+      .sc-label {
+        font-size: 10px;
+        letter-spacing: 1px;
+      }
+
+      .gauge-row {
+        grid-template-columns: 1fr !important;
+        gap: 12px;
+      }
+
+      .settings-grid {
+        grid-template-columns: 1fr !important;
+      }
     }
   </style>
 </head>
@@ -1144,6 +1673,27 @@
           <button class="ctrl-btn em-btn" id="btn-em">⚡ EMERGENCY TRIGGER</button>
           <button class="ctrl-btn" id="btn-reset" style="--cb:#4a6a80;margin-left:auto">↺ RESET SISTEM</button>
           <div class="mode-pill" id="mode-pill">MODE: OTOMATIS</div>
+
+          <!-- ── AI CHAT BOX ──────────────────────────────── -->
+          <div class="ai-chat-panel" id="ai-chat-panel">
+            <div class="ai-chat-header">
+              <span class="ai-label">⬡ AI ASSISTANT</span>
+              <span class="ai-model-tag">gemini-1.5-flash</span>
+              <button class="ai-toggle-btn" id="ai-toggle-btn" onclick="toggleChat()">▾ TUTUP</button>
+            </div>
+            <div class="ai-messages" id="ai-messages">
+              <div class="ai-msg ai-msg--bot">
+                <span>Halo! Saya asisten AI FireGuard. Tanyakan kondisi sensor, log bahaya, atau apapun tentang sistem
+                  ini.</span>
+              </div>
+            </div>
+            <div class="ai-input-row">
+              <input type="text" id="ai-input" class="ai-input" placeholder="// Tanya kondisi sensor..."
+                onkeydown="if(event.key==='Enter') kirimPertanyaan()" />
+              <button class="ai-send-btn" onclick="kirimPertanyaan()">KIRIM</button>
+            </div>
+          </div>
+
         </div>
 
       </div>
@@ -1547,7 +2097,7 @@
         warn: S.log.filter(a => a.level === 'warning').length,
         ok: S.log.filter(a => a.level === 'info' || a.level === 'success').length,
       }
-      
+
       c.innerHTML = [
         { l: 'TOTAL LOG', v: counts.total, hc: '#94a3b8' },
         { l: 'BAHAYA', v: counts.danger, hc: '#ff0057' },
@@ -1694,21 +2244,136 @@
       Object.assign(document.createElement('a'), { href: url, download: 'fireguard_log.csv' }).click()
     })
 
-    ;[
-      ['thr-hw', 'humidity', 'w', 'tv-hw'],
-      ['thr-hd', 'humidity', 'd', 'tv-hd'],
-      ['thr-tw', 'temperature', 'w', 'tv-tw'],
-      ['thr-td', 'temperature', 'd', 'tv-td'],
-    ].forEach(([id, sens, lvl, valId]) => {
-      const el = q(id), vl = q(valId); if (!el) return
-      el.addEventListener('input', function () {
-        S.thr[sens][lvl] = parseInt(this.value); vl.textContent = this.value; updateGauges()
+      ;[
+        ['thr-hw', 'humidity', 'w', 'tv-hw'],
+        ['thr-hd', 'humidity', 'd', 'tv-hd'],
+        ['thr-tw', 'temperature', 'w', 'tv-tw'],
+        ['thr-td', 'temperature', 'd', 'tv-td'],
+      ].forEach(([id, sens, lvl, valId]) => {
+        const el = q(id), vl = q(valId); if (!el) return
+        el.addEventListener('input', function () {
+          S.thr[sens][lvl] = parseInt(this.value); vl.textContent = this.value; updateGauges()
+        })
       })
-    })
     q('save-thr').addEventListener('click', () => pushLog('success', 'Threshold diperbarui', 'Sistem'))
     q('save-conn').addEventListener('click', () => {
       pushLog('info', 'Konfigurasi disimpan — reload halaman untuk reconnect', 'Sistem')
     })
+
+    // ── KONFIGURASI AI GEMINI ──────────────────────────────────
+    const GEMINI_API_KEY = 'AQ.Ab8RN6KgtTiXd1mA-ohlxmAUXlnGyb2-WIRG0z98yOhPM3rBkw'
+
+    let chatOpen = true
+
+    function toggleChat() {
+      chatOpen = !chatOpen
+      const msgs = document.getElementById('ai-messages')
+      const inputRow = document.querySelector('.ai-input-row')
+      const btn = document.getElementById('ai-toggle-btn')
+      msgs.style.display = chatOpen ? '' : 'none'
+      inputRow.style.display = chatOpen ? '' : 'none'
+      btn.textContent = chatOpen ? '▾ TUTUP' : '▸ BUKA'
+    }
+
+    function getBotResponses() {
+      // Ambil snapshot data realtime dari objek S yang sudah ada
+      return `
+Data sensor FireGuard saat ini (realtime dari Firebase):
+- Suhu: ${S.fb.suhu !== null ? S.fb.suhu.toFixed(1) + '°C' : 'tidak terbaca'}
+- Kelembaban: ${S.fb.kelembaban !== null ? S.fb.kelembaban.toFixed(1) + '%' : 'tidak terbaca'}
+- Sensor API Kanan: ${S.fb.api_kanan ? 'AKTIF — API TERDETEKSI' : 'aman'}
+- Sensor API Kiri: ${S.fb.api_kiri ? 'AKTIF — API TERDETEKSI' : 'aman'}
+- Koneksi Firebase: ${S.fb.connected ? 'terhubung' : 'terputus'}
+- Mode sistem: ${S.mode === 'auto' ? 'otomatis' : 'manual'}
+- Total log: ${S.log.length} entri
+- Jumlah log BAHAYA: ${S.log.filter(a => a.level === 'danger').length}
+- Jumlah log WASPADA: ${S.log.filter(a => a.level === 'warning').length}
+- Log terbaru: ${S.log.length > 0 ? S.log[S.log.length - 1].msg : 'belum ada log'}
+`
+    }
+
+    function tambahPesan(teks, tipe) {
+      const container = document.getElementById('ai-messages')
+      const div = document.createElement('div')
+      div.className = `ai-msg ai-msg--${tipe}`
+      div.textContent = teks
+      container.appendChild(div)
+      container.scrollTop = container.scrollHeight
+      return div
+    }
+
+    async function kirimPertanyaan() {
+      const input = document.getElementById('ai-input')
+      const pertanyaan = input.value.trim()
+      if (!pertanyaan) return
+
+      // Tampilkan pesan user
+      tambahPesan(pertanyaan, 'user')
+      input.value = ''
+
+      // Tampilkan indikator loading
+      const loadingEl = tambahPesan('⬡ sedang memproses...', 'bot ai-msg--loading')
+
+      try {
+        // 1. Siapkan System Prompt (Instruksi Utama)
+        const systemPrompt = `Kamu adalah asisten AI sistem deteksi kebakaran bernama FireGuard Pro. 
+Tugasmu menjawab pertanyaan operator berdasarkan data sensor realtime berikut:
+${getBotResponses()}
+Jawab dalam Bahasa Indonesia. Singkat, jelas, dan to the point (maksimal 3 kalimat).
+Jika ada bahaya, tegaskan dengan jelas. Gunakan nada profesional.`
+
+        // 2. Tentukan Endpoint URL Gemini (menggunakan model 1.5-flash untuk kecepatan realtime)
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${GEMINI_API_KEY}`
+
+        // 3. Kirim Request ke Gemini API
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            systemInstruction: {
+              parts: [{ text: systemPrompt }]
+            },
+            contents: [
+              {
+                role: "user",
+                parts: [{ text: pertanyaan }]
+              }
+            ],
+            generationConfig: {
+              maxOutputTokens: 300,
+              temperature: 0.3 // Opsional: Dibuat rendah agar jawaban sensor lebih faktual
+            }
+          })
+        })
+
+        const data = await response.json()
+        loadingEl.remove()
+
+        // 4. Ekstrak Respons dari Gemini
+        if (data.candidates && data.candidates.length > 0) {
+          const aiResponse = data.candidates[0].content.parts[0].text
+          tambahPesan(aiResponse, 'bot')
+
+          // Asumsi fungsi pushLog sudah didefinisikan di kode Anda sebelumnya
+          if (typeof pushLog === 'function') {
+            pushLog('info', `AI Query: "${pertanyaan.substring(0, 40)}..."`, 'AI Assistant')
+          }
+        } else if (data.error) {
+          // Jika Google mengirimkan error, tampilkan alasannya di chat
+          console.error("Gemini API Error:", data.error.message)
+          tambahPesan(`Error dari server Google: ${data.error.message}`, 'bot')
+        } else {
+          console.error("Format respons tidak dikenal:", data)
+          tambahPesan('Gagal mendapat respons. Format data tidak sesuai.', 'bot')
+        }
+
+      } catch (err) {
+        loadingEl.remove()
+        tambahPesan('Koneksi ke AI gagal: ' + err.message, 'bot')
+      }
+    }
 
     function init() {
       S.t0 = Date.now()
