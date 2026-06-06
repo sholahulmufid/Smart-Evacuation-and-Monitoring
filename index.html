@@ -579,7 +579,7 @@
     /* ━━━━━━━━━━━━ STAT CARDS ━━━━━━━━━━━━ */
     .stat-row {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       gap: 10px;
       margin-bottom: 12px;
     }
@@ -1601,6 +1601,12 @@
             <div class="sc-label">MODE OPERASI</div>
             <div class="sc-val" id="sc-mode" style="color:#ffd600">AUTO</div>
             <div class="sc-sub">AI ESP32 aktif</div>
+          </div>
+          <!-- Tambahkan tepat setelah card ke-4 (ALERT AKTIF) -->
+          <div class="stat-card" style="--sc-color:#a855f7">
+            <div class="sc-label">ML KLASIFIKASI</div>
+            <div class="sc-val" id="sc-ml" style="color:#ff0bd6; font-size:18px">--</div>
+            <div class="sc-sub" id="sc-ml-sub">Decision Tree ESP32</div>
           </div>
           <div class="stat-card" style="--sc-color:#ff0057">
             <div class="sc-label">ALERT AKTIF</div>
