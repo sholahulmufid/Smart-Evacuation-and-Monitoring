@@ -927,6 +927,7 @@
 
     /* ── AI CHAT PANEL ─────────────────────────── */
     .ai-chat-panel {
+      width: 100%;
       background: var(--bg1);
       border: 1px solid var(--dim);
       border-radius: 15px;
@@ -944,14 +945,14 @@
     }
 
     .ai-label {
-      font-family: var(--f-mono);
+      font-family: var(--f-pop);
       font-size: 11px;
       letter-spacing: 3px;
       color: var(--purple);
     }
 
     .ai-model-tag {
-      font-family: var(--f-mono);
+      font-family: var(--f-pop);
       font-size: 9px;
       padding: 2px 8px;
       border: 1px solid #a855f730;
@@ -964,8 +965,8 @@
       margin-left: auto;
       background: transparent;
       border: 1px solid var(--dim);
-      color: var(--muted);
-      font-family: var(--f-mono);
+      color: rgb(165, 165, 165);
+      font-family: var(--f-pop);
       font-size: 9px;
       padding: 3px 10px;
       cursor: pointer;
@@ -983,7 +984,7 @@
 
     .ai-msg {
       padding: 8px 12px;
-      font-family: var(--f-mono);
+      font-family: var(--f-pop);
       font-size: 11px;
       line-height: 1.5;
       max-width: 88%;
@@ -1024,7 +1025,7 @@
       background: var(--bg0);
       border: 1px solid var(--dim);
       color: var(--text);
-      font-family: var(--f-mono);
+      font-family: var(--f-pop);
       font-size: 11px;
       outline: none;
       border-radius: 6px;
@@ -1043,7 +1044,7 @@
       background: #a855f715;
       border: 1px solid #a855f740;
       color: var(--purple);
-      font-family: var(--f-mono);
+      font-family: var(--f-pop);
       font-size: 10px;
       letter-spacing: 2px;
       cursor: pointer;
@@ -1062,6 +1063,7 @@
       padding: 14px 16px;
       display: flex;
       align-items: center;
+      flex-direction: column;
       gap: 10px;
       flex-wrap: wrap;
       position: relative;
@@ -1070,6 +1072,7 @@
     }
 
     .ctrl-btn {
+      display: none;
       padding: 8px 16px;
       font-family: var(--f-mono);
       font-size: 10px;
@@ -1672,23 +1675,16 @@
         </div>
 
         <div class="ctrl-panel">
-          <button class="ctrl-btn" id="btn-mode" style="--cb:#ffd600">⚙ SWITCH → MANUAL</button>
-          <button class="ctrl-btn" id="btn-doors" style="--cb:#00e5ff;display:none">⌗ BUKA SEMUA PINTU</button>
-          <button class="ctrl-btn" id="btn-led" style="--cb:#ffd600;display:none">◈ LED EVAKUASI ON</button>
-          <button class="ctrl-btn em-btn" id="btn-em">⚡ EMERGENCY TRIGGER</button>
-          <button class="ctrl-btn" id="btn-reset" style="--cb:#4a6a80;margin-left:auto">↺ RESET SISTEM</button>
-          <div class="mode-pill" id="mode-pill">MODE: OTOMATIS</div>
-
-          <!-- ── AI CHAT BOX ──────────────────────────────── -->
           <div class="ai-chat-panel" id="ai-chat-panel">
             <div class="ai-chat-header">
               <span class="ai-label">⬡ AI ASSISTANT</span>
-              <span class="ai-model-tag">llama-3.3</span>
-              <button class="ai-toggle-btn" id="ai-toggle-btn" onclick="toggleChat()">▾ TUTUP</button>
+              <!-- <span class="ai-model-tag">llama-3.3</span> -->
+              <button class="ai-toggle-btn" id="ai-toggle-btn" onclick="toggleChat()">- TUTUP</button>
             </div>
             <div class="ai-messages" id="ai-messages">
               <div class="ai-msg ai-msg--bot">
-                <span>Halo! Saya asisten AI FireGuard. Tanyakan kondisi sensor, log bahaya, atau apapun tentang sistem
+                <span>Halo! Saya asisten AI untuk membantu Anda. Tanyakan kondisi sensor, log bahaya, atau apapun
+                  tentang sistem
                   ini.</span>
               </div>
             </div>
@@ -1698,6 +1694,14 @@
               <button class="ai-send-btn" onclick="kirimPertanyaan()">KIRIM</button>
             </div>
           </div>
+          <button class="ctrl-btn" id="btn-mode" style="--cb:#ffd600">⚙ SWITCH → MANUAL</button>
+          <button class="ctrl-btn" id="btn-doors" style="--cb:#00e5ff;display:none">⌗ BUKA SEMUA PINTU</button>
+          <button class="ctrl-btn" id="btn-led" style="--cb:#ffd600;display:none">◈ LED EVAKUASI ON</button>
+          <button class="ctrl-btn em-btn" id="btn-em">⚡ EMERGENCY TRIGGER</button>
+          <button class="ctrl-btn" id="btn-reset" style="--cb:#4a6a80;margin-left:auto">↺ RESET SISTEM</button>
+          <div class="mode-pill" id="mode-pill">MODE: OTOMATIS</div>
+
+          <!-- ── AI CHAT BOX ──────────────────────────────── -->
 
         </div>
 
@@ -1869,6 +1873,10 @@
           const data = snapshot.val()
           if (!data) return
 
+          // ── T3: catat waktu listener dipanggil ──────────────────
+          const t3_terima = Date.now()
+          const t3_serverTs = typeof data.timestamp === 'number' ? data.timestamp : null
+
           S.fb.suhu = typeof data.suhu === 'number' ? data.suhu : null
           S.fb.kelembaban = typeof data.kelembaban === 'number' ? data.kelembaban : null
           S.fb.api_kanan = !!data.api_kanan
@@ -1894,11 +1902,19 @@
           }
           _prevFireState = fireNow
 
+          // ── T4: ukur waktu render UI ─────────────────────────────
+          const t4_start = performance.now()
           updateGauges()
           updateStats()
           updateTicker()
-        })
+          const t4_render = performance.now() - t4_start
 
+          // ── Cetak hasil ke Console (F12 → Console) ───────────────
+          if (t3_serverTs) {
+            const t3_latency = t3_terima - t3_serverTs
+            console.log(`[LATENCY] T3 Firebase→Browser: ${t3_latency} ms | T4 Render: ${t4_render.toFixed(1)} ms`)
+          }
+        })
         fbDb.ref('.info/connected').on('value', snap => {
           const online = snap.val()
           if (!online) {
@@ -2402,7 +2418,7 @@ Jika ada bahaya, tegaskan dengan jelas, dan langsung kirim pesan secara otomatis
           if (chatHistory.length > 10) chatHistory = chatHistory.slice(-10)
 
           tambahPesan(aiResponse, 'bot')
-          pushLog('info', `AI Query: "${pertanyaan.substring(0, 40)}..."`, 'AI Assistant')
+          // pushLog('info', `AI Query: "${pertanyaan.substring(0, 40)}..."`, 'AI Assistant')
 
         } else if (data.error) {
           chatHistory.pop()
@@ -2444,27 +2460,7 @@ Jika ada bahaya, tegaskan dengan jelas, dan langsung kirim pesan secara otomatis
       initFirebase()
       pushLog('info', 'FireGuard PRO v2.0 aktif — menunggu data ESP32', 'System')
     }
-    //tambahan
-    // T3: waktu dari Firebase push sampai listener terpanggil
-    // Firebase menyertakan serverTimestamp di data, kita bandingkan dengan Date.now()
-    onValue(ref(db, 'fireguard/sensor'), (snapshot) => {
-      const t3_receive = Date.now();             // waktu listener dipanggil
 
-      const data = snapshot.val();
-      const serverTs = data.timestamp;           // millis() dari ESP32
-      const t3_latency = t3_receive - serverTs;  // T3 + clock drift ESP32 vs server
-
-      // T4: waktu render DOM
-      const t4_start = performance.now();
-      updateUI(data);                            // fungsi update semua elemen UI
-      const t4_render = performance.now() - t4_start;  // biasanya 5–30 ms
-
-      console.log(`[LATENCY] Firebase→Browser: ${t3_latency}ms | Render: ${t4_render.toFixed(1)}ms`);
-
-      // Tampilkan di dashboard (opsional, bagus untuk demo paper)
-      document.getElementById('latency-display').textContent =
-        `Latency: ${t3_latency} ms`;
-    });
 
     window.addEventListener('load', () => {
       init()
