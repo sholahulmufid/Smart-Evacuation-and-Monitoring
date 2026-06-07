@@ -1891,6 +1891,36 @@
           S.fb.connected = true
           S.fb.lastUpdate = new Date()
 
+          // Tambahkan di dalam fbRef.on('value', snapshot => { ...
+          // tepat setelah baris: S.fb.lastUpdate = new Date()
+
+          // Ambil hasil ML dari Firebase
+          if (data.ml_label) {
+            const mlLabel = data.ml_label
+            const mlEl = document.getElementById('sc-ml')
+            const mlSub = document.getElementById('sc-ml-sub')
+
+            const colorMap = {
+              'AMAN': '#00ff87',
+              'FALSE_ALARM': '#ffd600',
+              'BAHAYA': '#ff0057'
+            }
+
+            const labelMap = {
+              'AMAN': 'AMAN',
+              'FALSE_ALARM': 'FALSE ALARM',
+              'BAHAYA': 'BAHAYA'
+            }
+
+            if (mlEl) {
+              mlEl.textContent = labelMap[mlLabel] || mlLabel
+              mlEl.style.color = colorMap[mlLabel] || '#a855f7'
+            }
+            if (mlSub) {
+              mlSub.textContent = 'Decision Tree v1.0'
+            }
+          }
+
           const fbEl = q('fb-status')
           fbEl.textContent = '⬡ FIREBASE'
           fbEl.className = 'fb-status connected'
