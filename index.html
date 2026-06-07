@@ -1259,7 +1259,7 @@
 
     /* ━━━━━━━━━━━━ SETTINGS ━━━━━━━━━━━━ */
     .settings-grid {
-      display: grid;
+      display: none;
       grid-template-columns: 1fr 1fr;
       gap: 14px;
     }
@@ -1514,7 +1514,7 @@
       }
 
       .sc-val {
-        font-size: 20px !important;
+        font-size: 22px !important;
       }
 
       .sc-label {
@@ -1530,6 +1530,18 @@
       .settings-grid {
         grid-template-columns: 1fr !important;
       }
+
+      #alerts-card {
+        grid-column: span 2 !important;
+      }
+
+      .sc-label {
+        justify-content: center;
+      }
+
+      .sc-val {
+        text-align: center;
+      }
     }
   </style>
 </head>
@@ -1543,12 +1555,12 @@
     <header>
       <div class="header-logo">
         <div class="logo-hex"></div>
-        <span class="hl">SFEMS</span>
+        <span class="hl">Triple<span style="color: #ff5100;">Kill</span></span>
       </div>
       <nav class="header-nav">
         <button class="nav-tab active" data-page="dashboard">DASHBOARD</button>
         <button class="nav-tab" data-page="history">RIWAYAT</button>
-        <button class="nav-tab" data-page="settings">PENGATURAN</button>
+        <button class="nav-tab" data-page="settings" style="display: none;">PENGATURAN</button>
       </nav>
       <div class="header-right">
         <div class="live-pill"><span class="live-dot"></span>LIVE</div>
@@ -1605,10 +1617,10 @@
           <!-- Tambahkan tepat setelah card ke-4 (ALERT AKTIF) -->
           <div class="stat-card" style="--sc-color:#a855f7">
             <div class="sc-label">ML KLASIFIKASI</div>
-            <div class="sc-val" id="sc-ml" style="color:#ff0bd6; font-size:18px">--</div>
-            <div class="sc-sub" id="sc-ml-sub">Decision Tree ESP32</div>
+            <div class="sc-val" id="sc-ml" style="color:#ff0bd6;"">--</div>
+            <div class=" sc-sub" id="sc-ml-sub">Decision Tree ESP32</div>
           </div>
-          <div class="stat-card" style="--sc-color:#ff0057">
+          <div class="stat-card" id="alerts-card" style="--sc-color:#ff0057">
             <div class="sc-label">ALERT AKTIF</div>
             <div class="sc-val" id="sc-alerts" style="color:#ff0057">0</div>
             <div class="sc-sub" id="sc-alerts-sub">0 total log</div>
@@ -1917,7 +1929,7 @@
               mlEl.style.color = colorMap[mlLabel] || '#a855f7'
             }
             if (mlSub) {
-              mlSub.textContent = 'Decision Tree v1.0'
+              mlSub.textContent = 'Decision Tree'
             }
           }
 
@@ -1926,7 +1938,7 @@
           fbEl.className = 'fb-status connected'
           q('sc-esp').textContent = 'ONLINE'
           q('sc-esp').style.color = '#00e5ff'
-          q('sc-esp-sub').textContent = 'Firebase realtime'
+          q('sc-esp-sub').textContent = 'Firebase Realtime'
 
           const fireNow = S.fb.api_kanan || S.fb.api_kiri
           if (fireNow && !_prevFireState) {
