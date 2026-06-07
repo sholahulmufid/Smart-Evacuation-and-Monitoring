@@ -1572,7 +1572,7 @@
           <span class="ti ok">✦ SISTEM AKTIF</span>
           <span class="ti ok">✦ MENGHUBUNGKAN FIREBASE...</span>
           <span class="ti default">✦ SEMUA SENSOR NORMAL</span>
-          <span class="ti default">✦ FIREGUARD PRO v2.0</span>
+          <span class="ti default">✦ Triple Kill AI</span>
         </div>
       </div>
     </div>
@@ -2374,17 +2374,80 @@
       btn.textContent = chatOpen ? '▾ TUTUP' : '▸ BUKA'
     }
 
+    // GANTI FUNGSI getKonteksSensor() YANG LAMA DENGAN INI
+    // Letakkan tepat menggantikan fungsi getKonteksSensor() lama
+    // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
     function getKonteksSensor() {
-      return `Data sensor FireGuard saat ini (realtime dari Firebase):
-- Suhu: ${S.fb.suhu !== null ? S.fb.suhu.toFixed(1) + '°C' : 'tidak terbaca'}
-- Kelembaban: ${S.fb.kelembaban !== null ? S.fb.kelembaban.toFixed(1) + '%' : 'tidak terbaca'}
-- Sensor API Kanan: ${S.fb.api_kanan ? 'AKTIF — API TERDETEKSI' : 'aman'}
-- Sensor API Kiri: ${S.fb.api_kiri ? 'AKTIF — API TERDETEKSI' : 'aman'}
-- Koneksi Firebase: ${S.fb.connected ? 'terhubung' : 'terputus'}
-- Mode sistem: ${S.mode === 'auto' ? 'otomatis' : 'manual'}
-- Total log: ${S.log.length} entri
-- Log BAHAYA: ${S.log.filter(a => a.level === 'danger').length}
-- Log terbaru: ${S.log.length > 0 ? S.log[S.log.length - 1].msg : 'belum ada log'}`
+
+      // ------ Ambil hasil ML terkini dari card dashboard ------------------------------
+      const mlLabel = document.getElementById('sc-ml')?.textContent || '--'
+      const mlSub = document.getElementById('sc-ml-sub')?.textContent || ''
+
+      // ------ Hitung statistik log untuk konteks tambahan ---------------------------
+      const totalLog = S.log.length
+      const dangerLog = S.log.filter(a => a.level === 'danger').length
+      const warnLog = S.log.filter(a => a.level === 'warning').length
+      const lastLog = S.log.length > 0 ? S.log[S.log.length - 1].msg : 'belum ada log'
+      const lastLogTime = S.log.length > 0 ? fmtT(S.log[S.log.length - 1].time) : '-'
+
+      // ------ Tentukan status ML saat ini untuk penjelasan ------------------------
+      const mlStatus = {
+        'AMAN': 'Sistem aman. Tidak ada indikasi kebakaran.',
+        'FALSE ALARM': 'Terdeteksi api kecil (kemungkinan korek api/lilin) tapi suhu tidak naik signifikan. Sistem menilai ini bukan kebakaran berbahaya.',
+        'BAHAYA': 'KEBAKARAN TERDETEKSI! Suhu tinggi dan sensor IR aktif. Jalur evakuasi LED merah aktif dan buzzer berbunyi.',
+        '--': 'Model ML belum menerima data dari ESP32.'
+      }
+
+      return `
+=== DATA SENSOR REALTIME (dari Firebase) ===
+- Suhu         : ${S.fb.suhu !== null ? S.fb.suhu.toFixed(1) + ' derajat C' : 'tidak terbaca'}
+- Kelembaban   : ${S.fb.kelembaban !== null ? S.fb.kelembaban.toFixed(1) + '%' : 'tidak terbaca'}
+- IR Sensor Kanan: ${S.fb.api_kanan ? 'AKTIF - Api terdeteksi' : 'Normal - tidak ada api'}
+- IR Sensor Kiri : ${S.fb.api_kiri ? 'AKTIF - Api terdeteksi' : 'Normal - tidak ada api'}
+- DHT22 valid  : ${S.fb.dht_valid ? 'Ya' : 'Tidak'}
+- Firebase     : ${S.fb.connected ? 'Terhubung' : 'Terputus'}
+- Mode sistem  : ${S.mode === 'auto' ? 'Otomatis' : 'Manual'}
+ 
+=== HASIL KLASIFIKASI MACHINE LEARNING ===
+- Label ML saat ini : ${mlLabel}
+- Status            : ${mlStatus[mlLabel] || mlLabel}
+- Model             : Decision Tree Classifier v1.0
+- Berjalan di       : ESP32 (on-device, tanpa cloud)
+- Latensi inferensi : kurang dari 1ms
+ 
+=== PENGETAHUAN MODEL DECISION TREE ===
+Model ditraining dari 450 sampel data sensor nyata (150 sampel per kelas).
+Akurasi model: 95.56% (86 benar dari 90 data uji).
+ 
+Aturan klasifikasi yang dipelajari model:
+1. AMAN:
+   - Kedua IR sensor tidak mendeteksi api (0)
+   - Suhu ruangan normal: 28.4 - 28.5 derajat C
+   - Kelembaban: 63 - 64%
+ 
+2. FALSE ALARM (api kecil, bukan kebakaran):
+   - Salah satu atau kedua IR sensor aktif (1)
+   - Tapi suhu TIDAK naik drastis (di bawah ~32 derajat C)
+   - Contoh: korek api, lilin, pemantik
+   - Respons sistem: LED kuning, buzzer MATI
+ 
+3. BAHAYA (kebakaran nyata):
+   - IR sensor aktif (1)
+   - Suhu naik drastis: 32.8 - 58.0 derajat C
+   - Kelembaban turun: 27.5 - 56.7%
+   - Respons sistem: LED merah animasi, buzzer nyaring, danger banner aktif
+ 
+Perbedaan utama sistem ini vs sistem lama:
+- Sistem lama: IR aktif = langsung alarm (false alarm tinggi)
+- Sistem baru: IR aktif + suhu tinggi = baru alarm (false alarm berkurang)
+ 
+=== LOG AKTIVITAS ===
+- Total log hari ini : ${totalLog} entri
+- Log bahaya         : ${dangerLog}
+- Log waspada        : ${warnLog}
+- Log terakhir       : ${lastLog} (${lastLogTime})
+`
     }
 
     function tambahPesan(teks, tipe) {
@@ -2429,11 +2492,26 @@
               // System prompt selalu di index 0
               {
                 role: 'system',
-                content: `Kamu adalah asisten AI sistem deteksi kebakaran bernama FireGuard Pro.
-Tugasmu menjawab pertanyaan operator berdasarkan data sensor realtime berikut:
+                content: `Kamu adalah asisten AI cerdas bernama Triple Kill AI.
+ 
+Kamu memiliki pengetahuan mendalam tentang:
+1. Sistem IoT berbasis ESP32 dengan sensor DHT22 (suhu & kelembaban) dan dua IR sensor (kanan & kiri)
+2. Model Machine Learning Decision Tree yang berjalan langsung di ESP32 (on-device inference)
+3. Cara kerja klasifikasi tiga kondisi: AMAN, FALSE ALARM, dan BAHAYA
+4. LED strip WS2812B sebagai jalur evakuasi visual
+5. Integrasi Firebase Realtime Database untuk monitoring
+ 
+Berikut konteks sistem dan data sensor saat ini:
 ${getKonteksSensor()}
-Jawab dalam Bahasa Indonesia. Singkat, jelas, maksimal 3 kalimat.
-Jika ada bahaya, tegaskan dengan jelas, dan langsung kirim pesan secara otomatisketika terdeteksi bahaya. Gunakan nada profesional.`
+ 
+Panduan menjawab:
+- Jawab dalam Bahasa Indonesia yang jelas dan profesional
+- Maksimal 4 kalimat per jawaban
+- Jika kondisi BAHAYA: tegaskan dengan jelas dan instruksikan tindakan evakuasi dan sarankan juga untuk memeriksa jalur evakuasi LED strip yang lebih aman atau jauh dari api
+- Jika kondisi FALSE ALARM: jelaskan bahwa sistem ML sudah mengenali ini bukan kebakaran berbahaya
+- Jika ditanya tentang cara kerja ML: jelaskan bahwa Decision Tree menganalisis suhu, kelembaban, dan status IR sensor
+- Jika ditanya akurasi: sebutkan 95.56% dari 450 data training
+- Selalu kaitkan jawaban dengan data sensor realtime yang sedang berjalan`
               },
               // Lalu seluruh history percakapan
               ...chatHistory
@@ -2494,7 +2572,7 @@ Jika ada bahaya, tegaskan dengan jelas, dan langsung kirim pesan secara otomatis
       renderNotifs()
       updateTicker()
       initFirebase()
-      pushLog('info', 'FireGuard PRO v2.0 aktif — menunggu data ESP32', 'System')
+      pushLog('info', 'AI aktif — menunggu data ESP32', 'System')
     }
 
 
